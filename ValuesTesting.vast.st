@@ -1,7 +1,11 @@
-'From VisualWorks®, 8.3 of 28. Juli 2017 on 26. Februar 2022 at 17:13:41'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 27. Februar 2022 at 18:34:52'!
 
-"Created 26. Februar 2022 um 17:13:41 by VA Smalltalk Transform"
-Application create: #ValuesTestingApp with: #()!
+"Created 27. Februar 2022 um 18:34:52 by VA Smalltalk Transform(1.4.0.0,chaider)"
+Application create: #ValuesTestingApp with: 
+    (#( ValuesApp SUnit EsParsing )
+        collect: [:each | Smalltalk at: each ifAbsent: [
+            Application errorPrerequisite: #ValuesTestingApp missing: each]])!
+
 ValuesTestingApp becomeDefault!
 	Application subclass: #ValuesTestingApp
 	classInstanceVariableNames: ''
@@ -36,16 +40,6 @@ storeVersion
 	^'3.0.0.0'!
 
  !TestCase
-	subclass: #ValuemapTests
-	classInstanceVariableNames: ''
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-ValuemapTests comment:
-'Tests for the behavior of OrderedDictionary as Dictionary and as Value'!
-
-TestCase
 	subclass: #ValuePrinterTests
 	classInstanceVariableNames: ''
 	instanceVariableNames: ''
@@ -64,6 +58,16 @@ Value
 
 Testvalue comment:
 'Testvalue is a resource class for testing values'!
+
+TestCase
+	subclass: #ValuemapTests
+	classInstanceVariableNames: ''
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+ValuemapTests comment:
+'Tests for the behavior of OrderedDictionary as Dictionary and as Value'!
 
 !Testvalue class publicMethods!
 
@@ -140,8 +144,8 @@ constant: constantSymbol optional: optionalSymbol dictionary: dictionaryDictiona
 !Testvalue class publicMethods!
 
 localSpecification
-	<constant: #constant class: #{Symbol}>
-	<optional: #optional class: #{Symbol} default: '#none'>
+	<constant: #constant class: #(#Symbol)>
+	<optional: #optional class: #(#Symbol) default: '#none'>
 	<sequence: #array>
 	<map: #dictionary>! !
 
@@ -296,10 +300,10 @@ testIndexedAccess
 	od add: #foo -> 'bar'.
 	self assert: od size = 1.
 	self assert: (od atIndex: 1) = (#foo -> 'bar').
-	self should: [od atIndex: 0] raise: SubscriptOutOfBoundsError.
-	self should: [od atIndex: 2] raise: SubscriptOutOfBoundsError.
-	self should: [od atIndex: #key] raise: NonIntegerIndexError.
-	self should: [od atIndex: '1'] raise: NonIntegerIndexError.!
+	self should: [od atIndex: 0] raise: ExCLDTIndexOutOfRange.
+	self should: [od atIndex: 2] raise: ExCLDTIndexOutOfRange.
+	self should: [od atIndex: #key] raise: ExCLDTInvalidArgument.
+	self should: [od atIndex: '1'] raise: ExCLDTInvalidArgument.!
 
 testIndexOf
 	| od |
@@ -322,7 +326,7 @@ testKeyedAccess
 	self assert: od size = 2.
 	self assert: (od at: #foo) = 'bar'.
 	self assert: (od at: #baz) = 'xxx'.
-	self should: [od at: #bar] raise: NotFoundError.
+	self should: [od at: #bar] raise: ExCLDTKeyNotFound.
 	self assert: (od at: #bar ifAbsent: [nil]) isNil.!
 
 testReadBackAllTestInstances
@@ -336,8 +340,8 @@ testRemoving
 	| od |
 	od := Valuemap new.
 	self assert: od isEmpty.
-	self should: [od removeKey: #foo] raise: NotFoundError.
-	self shouldnt: [od removeKey: #foo ifAbsent: nil] raise: NotFoundError.
+	self should: [od removeKey: #foo] raise: ExCLDTKeyNotFound.
+	self shouldnt: [od removeKey: #foo ifAbsent: nil] raise: ExCLDTKeyNotFound.
 	self assert: (od removeKey: #foo ifAbsent: nil) isNil.
 	od add: #foo -> 'bar'.
 	self assert: od size = 1.
@@ -349,8 +353,8 @@ testRemoving
 	od at: #baz put: 'xxx'.
 	self assert: od size = 2.
 	self assert: (od order) asArray = #(#foo #baz).
-	self should: [od removeKey: #zzz] raise: NotFoundError.
-	self shouldnt: [od removeKey: #zzz ifAbsent: nil] raise: NotFoundError.
+	self should: [od removeKey: #zzz] raise: ExCLDTKeyNotFound.
+	self shouldnt: [od removeKey: #zzz ifAbsent: nil] raise: ExCLDTKeyNotFound.
 	self assert: od size = 2.
 	self assert: (od order) asArray = #(#foo #baz).
 	self assert: (od removeKey: #foo) = 'bar'.
@@ -553,5 +557,5 @@ example
 	^state! !
 
 
-Values-Testing initializeAfterLoad!
-Values-Testing loaded!
+ValuesTestingApp initializeAfterLoad!
+ValuesTestingApp loaded!

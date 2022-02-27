@@ -1,7 +1,11 @@
-'From VisualWorks®, 8.3 of 28. Juli 2017 on 26. Februar 2022 at 17:08:13'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 27. Februar 2022 at 17:53:19'!
 
-"Created 26. Februar 2022 um 17:08:13 by VA Smalltalk Transform"
-Application create: #ValuesApp with: #()!
+"Created 27. Februar 2022 um 17:53:19 by VA Smalltalk Transform(1.4.0.0,chaider)"
+Application create: #ValuesApp with: 
+    (#( Kernel )
+        collect: [:each | Smalltalk at: each ifAbsent: [
+            Application errorPrerequisite: #ValuesApp missing: each]])!
+
 ValuesApp becomeDefault!
 	Application subclass: #ValuesApp
 	classInstanceVariableNames: ''
@@ -46,7 +50,40 @@ parcelName
 storeVersion
 	^'3.0.0.2'!
 
- !Object
+ !
+"VisualWorks stub classes"
+
+EsIndexedDictionary
+	subclass: #Valuemap
+	classInstanceVariableNames: ''
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+Valuemap comment: 'VisualWorks class'
+!
+
+Color
+	subclass: #ColorValue
+	classInstanceVariableNames: ''
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+ColorValue comment: 'VisualWorks class'
+!
+
+DateAndTime
+	subclass: #Timestamp
+	classInstanceVariableNames: ''
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+Timestamp comment: 'VisualWorks class'
+!
+
+Object
 	subclass: #Value
 	classInstanceVariableNames: ''
 	instanceVariableNames: ''
@@ -79,14 +116,20 @@ It consists of
 Printvalues are created when printing the source for a Value in the first pass. The second pass takes the Printvalue and produces a nicely indented soure string for the value.'!
 
 Printvalue
-	subclass: #ArrayPrintvalue
+	subclass: #ValuePrintvalue
 	classInstanceVariableNames: ''
-	instanceVariableNames: 'arguments'
+	instanceVariableNames: 'classname arguments'
 	classVariableNames: ''
 	poolDictionaries: ''!
 
-ArrayPrintvalue comment:
-'ArrayPrintvalue is a special Printvalue for sequentiable collections of Values'!
+ValuePrintvalue comment:
+'ValuePrintvalue holds the data to print a Value.
+
+Instance Variables:
+	arguments	<SequenceableCollection of: (Printargument | EmptyArgument)>	the arguments
+	classname	<String>														the namespace aware name of the class
+
+'!
 
 Object
 	subclass: #Emitter
@@ -107,6 +150,26 @@ Instance Variables
 '!
 
 Emitter
+	subclass: #TextEmitter
+	classInstanceVariableNames: ''
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+TextEmitter comment:
+'TextEmitter outputs a descriptive text.'!
+
+TextEmitter
+	subclass: #TextBlockemitter
+	classInstanceVariableNames: ''
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+TextBlockemitter comment:
+'TextBlockEmitter emits text as indented block'!
+
+Emitter
 	subclass: #SourceEmitter
 	classInstanceVariableNames: ''
 	instanceVariableNames: ''
@@ -115,6 +178,26 @@ Emitter
 
 SourceEmitter comment:
 'SourceEmitter outputs source code.'!
+
+SourceEmitter
+	subclass: #Lineemitter
+	classInstanceVariableNames: ''
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+Lineemitter comment:
+'Emits source as one line'!
+
+Printvalue
+	subclass: #ArrayPrintvalue
+	classInstanceVariableNames: ''
+	instanceVariableNames: 'arguments'
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+ArrayPrintvalue comment:
+'ArrayPrintvalue is a special Printvalue for sequentiable collections of Values'!
 
 SourceEmitter
 	subclass: #Blockemitter
@@ -126,16 +209,6 @@ SourceEmitter
 Blockemitter comment:
 'Emits source as indented block'!
 
-Emitter
-	subclass: #TextEmitter
-	classInstanceVariableNames: ''
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-TextEmitter comment:
-'TextEmitter outputs a descriptive text.'!
-
 TextEmitter
 	subclass: #TextLineemitter
 	classInstanceVariableNames: ''
@@ -145,6 +218,26 @@ TextEmitter
 
 TextLineemitter comment:
 'TextLineEmitter emits text as one line'!
+
+Dictionary
+	variableSubclass: #Valuemap
+	classInstanceVariableNames: ''
+	instanceVariableNames: 'order'
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+Valuemap comment:
+'A Valuemap is an ordered dictionary preserving the order in which entries are added.
+
+Instances are also used as ordered volatile dictionary, not just as value.
+
+In VisualWorks, Valuemap is subclassed from Dictionary to inherit the dictionary API.
+
+Instance Variables:
+	order	<SequenceableCollection of: Object>		the ordered keys
+
+
+The class used to be named OrderedDictionary, but was renamed for dialect compatibility with Pharo, which has a class named OrderedDictionary with different semantics.'!
 
 Value
 	subclass: #Printargument
@@ -171,26 +264,6 @@ Printargument
 DictionaryPrintargument comment:
 'DictionaryPrintargument holds the Printvalues for key and value of an entry in a dictionary.
 Both key and value can be Values'!
-
-Dictionary
-	variableSubclass: #Valuemap
-	classInstanceVariableNames: ''
-	instanceVariableNames: 'order'
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-Valuemap comment:
-'A Valuemap is an ordered dictionary preserving the order in which entries are added.
-
-Instances are also used as ordered volatile dictionary, not just as value.
-
-In VisualWorks, Valuemap is subclassed from Dictionary to inherit the dictionary API.
-
-Instance Variables:
-	order	<SequenceableCollection of: Object>		the ordered keys
-
-
-The class used to be named OrderedDictionary, but was renamed for dialect compatibility with Pharo, which has a class named OrderedDictionary with different semantics.'!
 
 Printvalue
 	subclass: #LiteralPrintvalue
@@ -235,42 +308,6 @@ Instance Variables:
 	stream	<WriteStream>	a writestream passed around to collect the sources
 
 '!
-
-Printvalue
-	subclass: #ValuePrintvalue
-	classInstanceVariableNames: ''
-	instanceVariableNames: 'classname arguments'
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-ValuePrintvalue comment:
-'ValuePrintvalue holds the data to print a Value.
-
-Instance Variables:
-	arguments	<SequenceableCollection of: (Printargument | EmptyArgument)>	the arguments
-	classname	<String>														the namespace aware name of the class
-
-'!
-
-TextEmitter
-	subclass: #TextBlockemitter
-	classInstanceVariableNames: ''
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-TextBlockemitter comment:
-'TextBlockEmitter emits text as indented block'!
-
-SourceEmitter
-	subclass: #Lineemitter
-	classInstanceVariableNames: ''
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-Lineemitter comment:
-'Emits source as one line'!
 
 !ArrayPrintvalue class publicMethods!
 
@@ -334,8 +371,8 @@ emitSeparator
 !DictionaryPrintargument class publicMethods!
 
 localSpecification
-	<constant: #name class: #{Printvalue}>
-	<constant: #value class: #{Printvalue}>! !
+	<constant: #name class: #(#Printvalue)>
+	<constant: #value class: #(#Printvalue)>! !
 
 !DictionaryPrintvalue class publicMethods!
 
@@ -357,7 +394,7 @@ isOrdered: isOrderedBoolean
 
 localSpecification
 	<sequence: #arguments>
-	<optional: #isOrdered class: #{Boolean} default: 'false'>! !
+	<optional: #isOrdered class: #(#Boolean) default: 'false'>! !
 
 !DictionaryPrintvalue publicMethods!
 
@@ -564,7 +601,7 @@ string: stringString
 !LiteralPrintvalue class publicMethods!
 
 localSpecification
-	<constant: #string class: #{String}>! !
+	<constant: #string class: #(#String)>! !
 
 !LiteralPrintvalue publicMethods!
 
@@ -609,8 +646,8 @@ name: nameString value: valuePrintvalue
 !Printargument class publicMethods!
 
 localSpecification
-	<constant: #name class: #{String}>
-	<constant: #value class: #{Printvalue}>! !
+	<constant: #name class: #(#String)>
+	<constant: #value class: #(#Printvalue)>! !
 
 !Printargument publicMethods!
 
@@ -735,7 +772,7 @@ emitterClassFor: printvalue
 		ifFalse: [TextBlockemitter]!
 
 streamClass
-	^TextStream! !
+	^WriteStream! !
 
 !TextEmitter publicMethods!
 
@@ -963,20 +1000,6 @@ associationsDo: aBlock
 
 !Valuemap publicMethods!
 
-removeKey: key ifAbsent: aBlock 
-
-	| index element |
-	index := self findKey: key ifAbsent: nil.  "avoid full block"
-	index isNil ifTrue: [^aBlock value].
-	element := self basicAt: index.
-	self order remove: element key.
-	self basicAt: index put: nil.
-	tally := tally - 1.
-	self fixCollisionsFrom: index.
-	^element value! !
-
-!Valuemap publicMethods!
-
 collect: oneArgumentBlock
 	| newCollection |
 	newCollection := self species new: self size.
@@ -1001,12 +1024,6 @@ printvalueWith: printer
 	^DictionaryPrintvalue arguments: (self printargumentsWith: printer) isOrdered: true! !
 
 !Valuemap publicMethods!
-
-atNewIndex: index put: anAssociation
-	self basicAt: index put: anAssociation.
-	tally := tally + 1.
-	self order addLast: anAssociation key.
-	self fullCheck!
 
 noCheckAdd: anAssociation
 	super noCheckAdd: anAssociation.
@@ -1090,7 +1107,7 @@ classname: classnameString
 !ValuePrintvalue class publicMethods!
 
 localSpecification
-	<constant: #classname class: #{String}>
+	<constant: #classname class: #(#String)>
 	<sequence: #arguments>! !
 
 !ValuePrintvalue publicMethods!
@@ -1139,31 +1156,6 @@ isLine
 		^self arguments first value isLine].
 	^self arguments size < 5 and: [
 	self arguments allSatisfy: [:arg | arg isSimple]]! !
-
-!Class publicMethods!
-
-nameRelativeTo: targetClass
-	"<String>"
-	"self nameRelativeTo: Object"
-
-	| ref |
-	(targetClass isInScope: self) ifTrue: [
-		^self name asString].
-	ref := self fullyQualifiedReference.
-	ref environmentName ifNil: [ref := self fullyQualifiedReferenceFrom: Root].
-	^ref asString! !
-
-!Class publicMethods!
-
-isInScope: aClass
-	"<Boolean>
-	true if aClass is visible by the receiver - aClass can be used in the source without namespace qualifier.
-	false when aClass cannot be seen by the receiver - use the fullName"
-
-	| variableDefinition |
-	variableDefinition := (NameScope forClass: self) variableAt: aClass name from: nil.
-	^variableDefinition notNil and: [
-	variableDefinition binding value == aClass]! !
 
 !ColorValue class publicMethods!
 
@@ -1231,6 +1223,80 @@ isEmpty
 	self scaledGreen isNil and: [
 	self scaledBlue isNil]]! !
 
+!Timestamp class publicMethods!
+
+d: dayInteger m: monthInteger y: yearInteger
+	^self d: dayInteger m: monthInteger y: yearInteger h: 0 m: 0 s: 0!
+
+d: dayInteger m: monthInteger y: yearInteger h: hoursInteger
+	^self d: dayInteger m: monthInteger y: yearInteger h: hoursInteger m: 0 s: 0!
+
+d: dayInteger m: monthInteger y: yearInteger h: hoursInteger m: minutesInteger
+	^self d: dayInteger m: monthInteger y: yearInteger h: hoursInteger m: minutesInteger s: 0!
+
+d: dayInteger m: monthInteger y: yearInteger h: hoursInteger m: minutesInteger s: secondsInteger
+	| date time |
+	date := Date d: dayInteger m: monthInteger y: yearInteger.
+	time := Time h: hoursInteger m: minutesInteger s: secondsInteger.
+	^self fromDate: date andTime: time! !
+
+!Timestamp publicMethods!
+
+printvalueWith: printer
+	| wst |
+	wst := WriteStream on: (String new: 50).
+	wst
+		nextPut: $(;
+		nextPutAll: (printer classnameOf: self);
+		nextPutAll: ' d: ';
+		nextPutAll: self dayOfMonth printString;
+		nextPutAll: ' m: ';
+		nextPutAll: self month printString;
+		nextPutAll: ' y: ';
+		nextPutAll: self year printString.
+	(self hour isZero and: [
+	self minute isZero and: [
+	self second isZero]]) ifTrue: [
+			wst nextPut: $).
+			^LiteralPrintvalue string: wst contents].
+	wst
+		nextPutAll: ' h: ';
+		nextPutAll: self hour printString.
+	(self minute isZero and: [
+	self second isZero]) ifTrue: [
+			wst nextPut: $).
+			^LiteralPrintvalue string: wst contents].
+	wst
+		nextPutAll: ' m: ';
+		nextPutAll: self minute printString.
+	self second isZero ifTrue: [
+		wst nextPut: $).
+		^LiteralPrintvalue string: wst contents].
+	wst
+		nextPutAll: ' s: ';
+		nextPutAll: self second printString;
+		nextPut: $).
+	^LiteralPrintvalue string: wst contents! !
+
+!Class publicMethods!
+
+nameRelativeTo: targetClass
+	"<String>"
+	"self nameRelativeTo: Object"
+	"there are no namespaces in VA"
+
+	^self name asString! !
+
+!Class publicMethods!
+
+isInScope: aClass
+	"<Boolean>
+	true if aClass is visible by the receiver - aClass can be used in the source without namespace qualifier.
+	false when aClass cannot be seen by the receiver - use the fullName"
+	"All classes are globally visible in VA"
+
+	^true! !
+
 !Date class publicMethods!
 
 d: dayInteger m: monthInteger y: yearInteger
@@ -1292,12 +1358,6 @@ printvalueWith: printer
 		nextPutAll: self asNanoseconds printString;
 		nextPut: $).
 	^LiteralPrintvalue string: wst contents! !
-
-!GeneralBindingReference publicMethods!
-
-isEqualValue: aQualifiedName
-	^self class == aQualifiedName class and: [
-	path = aQualifiedName path]! !
 
 !Object class publicMethods!
 
@@ -1442,61 +1502,6 @@ printvalueWith: printer
 		nextPut: $).
 	^LiteralPrintvalue string: wst contents! !
 
-!Timestamp class publicMethods!
 
-d: dayInteger m: monthInteger y: yearInteger
-	^self d: dayInteger m: monthInteger y: yearInteger h: 0 m: 0 s: 0!
-
-d: dayInteger m: monthInteger y: yearInteger h: hoursInteger
-	^self d: dayInteger m: monthInteger y: yearInteger h: hoursInteger m: 0 s: 0!
-
-d: dayInteger m: monthInteger y: yearInteger h: hoursInteger m: minutesInteger
-	^self d: dayInteger m: monthInteger y: yearInteger h: hoursInteger m: minutesInteger s: 0!
-
-d: dayInteger m: monthInteger y: yearInteger h: hoursInteger m: minutesInteger s: secondsInteger
-	| date time |
-	date := Date d: dayInteger m: monthInteger y: yearInteger.
-	time := Time h: hoursInteger m: minutesInteger s: secondsInteger.
-	^self fromDate: date andTime: time! !
-
-!Timestamp publicMethods!
-
-printvalueWith: printer
-	| wst |
-	wst := WriteStream on: (String new: 50).
-	wst
-		nextPut: $(;
-		nextPutAll: (printer classnameOf: self);
-		nextPutAll: ' d: ';
-		nextPutAll: self dayOfMonth printString;
-		nextPutAll: ' m: ';
-		nextPutAll: self month printString;
-		nextPutAll: ' y: ';
-		nextPutAll: self year printString.
-	(self hour isZero and: [
-	self minute isZero and: [
-	self second isZero]]) ifTrue: [
-			wst nextPut: $).
-			^LiteralPrintvalue string: wst contents].
-	wst
-		nextPutAll: ' h: ';
-		nextPutAll: self hour printString.
-	(self minute isZero and: [
-	self second isZero]) ifTrue: [
-			wst nextPut: $).
-			^LiteralPrintvalue string: wst contents].
-	wst
-		nextPutAll: ' m: ';
-		nextPutAll: self minute printString.
-	self second isZero ifTrue: [
-		wst nextPut: $).
-		^LiteralPrintvalue string: wst contents].
-	wst
-		nextPutAll: ' s: ';
-		nextPutAll: self second printString;
-		nextPut: $).
-	^LiteralPrintvalue string: wst contents! !
-
-
-Values initializeAfterLoad!
-Values loaded!
+ValuesApp initializeAfterLoad!
+ValuesApp loaded!
