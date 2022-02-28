@@ -1,6 +1,6 @@
-'From VisualWorks®, 8.3 of 28. Juli 2017 on 27. Februar 2022 at 18:34:52'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 28. Februar 2022 at 19:05:30'!
 
-"Created 27. Februar 2022 um 18:34:52 by VA Smalltalk Transform(1.4.0.0,chaider)"
+"Created 28. Februar 2022 um 19:05:30 by VA Smalltalk Transform(1.4.0.1,chaider)"
 Application create: #ValuesTestingApp with: 
     (#( ValuesApp SUnit EsParsing )
         collect: [:each | Smalltalk at: each ifAbsent: [
@@ -40,6 +40,16 @@ storeVersion
 	^'3.0.0.0'!
 
  !TestCase
+	subclass: #ValuemapTests
+	classInstanceVariableNames: ''
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+ValuemapTests comment:
+'Tests for the behavior of OrderedDictionary as Dictionary and as Value'!
+
+TestCase
 	subclass: #ValuePrinterTests
 	classInstanceVariableNames: ''
 	instanceVariableNames: ''
@@ -58,16 +68,6 @@ Value
 
 Testvalue comment:
 'Testvalue is a resource class for testing values'!
-
-TestCase
-	subclass: #ValuemapTests
-	classInstanceVariableNames: ''
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-ValuemapTests comment:
-'Tests for the behavior of OrderedDictionary as Dictionary and as Value'!
 
 !Testvalue class publicMethods!
 
@@ -244,10 +244,10 @@ testAddingWithGrowth
 	letters := #(#a #b #c #d #e #f #g #h #i #j #k #l #m #n #o #p #q #r #s #t #u #v #w #x #y #z).
 	od := Valuemap new.
 	self shouldnt: [letters do: [:symbol | od add: symbol -> symbol asString]] raise: Error.
-	self assert: od order asArray = #(#a #b #c #d #e #f #g #h #i #j #k #l #m #n #o #p #q #r #s #t #u #v #w #x #y #z).
+	self assert: od keys asArray = #(#a #b #c #d #e #f #g #h #i #j #k #l #m #n #o #p #q #r #s #t #u #v #w #x #y #z).
 	od1 := Valuemap new.
 	self shouldnt: [letters do: [:symbol | od1 at: symbol put: symbol asString]] raise: Error.
-	self assert: od1 order asArray = #(#a #b #c #d #e #f #g #h #i #j #k #l #m #n #o #p #q #r #s #t #u #v #w #x #y #z).!
+	self assert: od1 keys asArray = #(#a #b #c #d #e #f #g #h #i #j #k #l #m #n #o #p #q #r #s #t #u #v #w #x #y #z).!
 
 testComparing
 	self assert: (Valuemap with: #foo -> 'bar') = (Valuemap with: #foo -> 'bar').
@@ -345,21 +345,21 @@ testRemoving
 	self assert: (od removeKey: #foo ifAbsent: nil) isNil.
 	od add: #foo -> 'bar'.
 	self assert: od size = 1.
-	self assert: (od order) asArray = #(#foo).
+	self assert: od keys asArray = #(#foo).
 	self assert: (od removeKey: #foo) = 'bar'.
 	self assert: od size = 0.
-	self assert: (od order) asArray = #().
+	self assert: od keys asArray = #().
 	od add: #foo -> 'bar'.
 	od at: #baz put: 'xxx'.
 	self assert: od size = 2.
-	self assert: (od order) asArray = #(#foo #baz).
+	self assert: od keys asArray = #(#foo #baz).
 	self should: [od removeKey: #zzz] raise: ExCLDTKeyNotFound.
 	self shouldnt: [od removeKey: #zzz ifAbsent: nil] raise: ExCLDTKeyNotFound.
 	self assert: od size = 2.
-	self assert: (od order) asArray = #(#foo #baz).
+	self assert: od keys asArray = #(#foo #baz).
 	self assert: (od removeKey: #foo) = 'bar'.
 	self assert: od size = 1.
-	self assert: (od order) asArray = #(#baz).! !
+	self assert: od keys asArray = #(#baz)! !
 
 !ValuePrinterTests publicMethods!
 

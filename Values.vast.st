@@ -1,6 +1,6 @@
-'From VisualWorks®, 8.3 of 28. Juli 2017 on 27. Februar 2022 at 17:53:19'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 28. Februar 2022 at 19:05:26'!
 
-"Created 27. Februar 2022 um 17:53:19 by VA Smalltalk Transform(1.4.0.0,chaider)"
+"Created 28. Februar 2022 um 19:05:26 by VA Smalltalk Transform(1.4.0.1,chaider)"
 Application create: #ValuesApp with: 
     (#( Kernel )
         collect: [:each | Smalltalk at: each ifAbsent: [
@@ -53,7 +53,7 @@ storeVersion
  !
 "VisualWorks stub classes"
 
-EsIndexedDictionary
+EsOrderedDictionary
 	subclass: #Valuemap
 	classInstanceVariableNames: ''
 	instanceVariableNames: ''
@@ -116,20 +116,14 @@ It consists of
 Printvalues are created when printing the source for a Value in the first pass. The second pass takes the Printvalue and produces a nicely indented soure string for the value.'!
 
 Printvalue
-	subclass: #ValuePrintvalue
+	subclass: #ArrayPrintvalue
 	classInstanceVariableNames: ''
-	instanceVariableNames: 'classname arguments'
+	instanceVariableNames: 'arguments'
 	classVariableNames: ''
 	poolDictionaries: ''!
 
-ValuePrintvalue comment:
-'ValuePrintvalue holds the data to print a Value.
-
-Instance Variables:
-	arguments	<SequenceableCollection of: (Printargument | EmptyArgument)>	the arguments
-	classname	<String>														the namespace aware name of the class
-
-'!
+ArrayPrintvalue comment:
+'ArrayPrintvalue is a special Printvalue for sequentiable collections of Values'!
 
 Object
 	subclass: #Emitter
@@ -150,26 +144,6 @@ Instance Variables
 '!
 
 Emitter
-	subclass: #TextEmitter
-	classInstanceVariableNames: ''
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-TextEmitter comment:
-'TextEmitter outputs a descriptive text.'!
-
-TextEmitter
-	subclass: #TextBlockemitter
-	classInstanceVariableNames: ''
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-TextBlockemitter comment:
-'TextBlockEmitter emits text as indented block'!
-
-Emitter
 	subclass: #SourceEmitter
 	classInstanceVariableNames: ''
 	instanceVariableNames: ''
@@ -178,26 +152,6 @@ Emitter
 
 SourceEmitter comment:
 'SourceEmitter outputs source code.'!
-
-SourceEmitter
-	subclass: #Lineemitter
-	classInstanceVariableNames: ''
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-Lineemitter comment:
-'Emits source as one line'!
-
-Printvalue
-	subclass: #ArrayPrintvalue
-	classInstanceVariableNames: ''
-	instanceVariableNames: 'arguments'
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-ArrayPrintvalue comment:
-'ArrayPrintvalue is a special Printvalue for sequentiable collections of Values'!
 
 SourceEmitter
 	subclass: #Blockemitter
@@ -209,6 +163,16 @@ SourceEmitter
 Blockemitter comment:
 'Emits source as indented block'!
 
+Emitter
+	subclass: #TextEmitter
+	classInstanceVariableNames: ''
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+TextEmitter comment:
+'TextEmitter outputs a descriptive text.'!
+
 TextEmitter
 	subclass: #TextLineemitter
 	classInstanceVariableNames: ''
@@ -218,26 +182,6 @@ TextEmitter
 
 TextLineemitter comment:
 'TextLineEmitter emits text as one line'!
-
-Dictionary
-	variableSubclass: #Valuemap
-	classInstanceVariableNames: ''
-	instanceVariableNames: 'order'
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-Valuemap comment:
-'A Valuemap is an ordered dictionary preserving the order in which entries are added.
-
-Instances are also used as ordered volatile dictionary, not just as value.
-
-In VisualWorks, Valuemap is subclassed from Dictionary to inherit the dictionary API.
-
-Instance Variables:
-	order	<SequenceableCollection of: Object>		the ordered keys
-
-
-The class used to be named OrderedDictionary, but was renamed for dialect compatibility with Pharo, which has a class named OrderedDictionary with different semantics.'!
 
 Value
 	subclass: #Printargument
@@ -308,6 +252,42 @@ Instance Variables:
 	stream	<WriteStream>	a writestream passed around to collect the sources
 
 '!
+
+Printvalue
+	subclass: #ValuePrintvalue
+	classInstanceVariableNames: ''
+	instanceVariableNames: 'classname arguments'
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+ValuePrintvalue comment:
+'ValuePrintvalue holds the data to print a Value.
+
+Instance Variables:
+	arguments	<SequenceableCollection of: (Printargument | EmptyArgument)>	the arguments
+	classname	<String>														the namespace aware name of the class
+
+'!
+
+TextEmitter
+	subclass: #TextBlockemitter
+	classInstanceVariableNames: ''
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+TextBlockemitter comment:
+'TextBlockEmitter emits text as indented block'!
+
+SourceEmitter
+	subclass: #Lineemitter
+	classInstanceVariableNames: ''
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+Lineemitter comment:
+'Emits source as one line'!
 
 !ArrayPrintvalue class publicMethods!
 
@@ -919,119 +899,20 @@ notEmpty
 
 !Valuemap publicMethods!
 
-atIndex: index
-	"<Association>"
-
-	^self associationAt: (self order at: index)!
-
 first
 	"<Association>"
 
-	^self associationAt: self order first!
-
-indexOf: aKey
-	"<Integer>"
-
-	^self order indexOf: aKey!
-
-keys
-	"<SequenceableCollection of: Object>"
-
-	^self order copy!
+	^self associationAt: self keys first!
 
 last
 	"<Association>"
 
-	^self associationAt: self order last!
-
-order
-	"<SequenceableCollection of: Object>
-	the order of the keys"
-
-	^order ifNil: [order := OrderedCollection new]! !
-
-!Valuemap publicMethods!
-
-= otherOrderedDictionary
-	^self class == otherOrderedDictionary class and: [
-	self size = otherOrderedDictionary size and: [
-	(1 to: self size) allSatisfy: [:i |
-		(self atIndex: i) = (otherOrderedDictionary atIndex: i)]]]!
-
-hash
-	^(1 to: self size) inject: self class hash into: [:hash :index |
-		| assoc |
-		assoc := self atIndex: index.
-		hash bitXor: (assoc key hash bitXor: assoc value hash)]! !
-
-!Valuemap publicMethods!
-
-copyWith: anAssociation 
-	"Answer a copy of the receiver with anAssociation added"
-
-	| copy |
-	copy := self copy.
-	copy add: anAssociation.
-	^copy!
-
-copyWithAll: aDictionary
-	"Answer a copy of the receiver with all associations from aDictionary added"
-
-	| copy |
-	copy := self copy.
-	copy addAll: aDictionary.
-	^copy!
-
-postCopy
-
-	super postCopy.
-	order := self order copy! !
-
-!Valuemap publicMethods!
-
-associationsDo: aBlock
-	"Note: do not use the keys to access anything.
-	This method is used by #changeCapacityTo: and #rehash where key access is not working"
-
-	| assocs |
-	assocs := Array new: self order size.
-	super associationsDo: [:assoc | assocs at: (self order indexOf: assoc key) put: assoc].
-	assocs do: aBlock! !
-
-!Valuemap publicMethods!
-
-collect: oneArgumentBlock
-	| newCollection |
-	newCollection := self species new: self size.
-	self keysAndValuesDo: [:eachKey :eachValue | 
-		newCollection at: eachKey put: (oneArgumentBlock value: eachValue)].
-	^newCollection!
-
-do: oneArgumentBlock
-	self order do: [:key |
-		oneArgumentBlock value: (self at: key)]!
-
-keysAndValuesDo: oneArgumentBlock
-	self order do: [:key |
-		oneArgumentBlock value: key value: (self at: key)]! !
+	^self associationAt: self keys last! !
 
 !Valuemap publicMethods!
 
 keysForPrinting
-	^self keys!
-
-printvalueWith: printer
-	^DictionaryPrintvalue arguments: (self printargumentsWith: printer) isOrdered: true! !
-
-!Valuemap publicMethods!
-
-noCheckAdd: anAssociation
-	super noCheckAdd: anAssociation.
-	self order addLast: anAssociation key!
-
-setTally
-	super setTally.
-	order := nil! !
+	^self keys! !
 
 !ValuePrinter class publicMethods!
 
@@ -1238,7 +1119,7 @@ d: dayInteger m: monthInteger y: yearInteger h: hoursInteger m: minutesInteger s
 	| date time |
 	date := Date d: dayInteger m: monthInteger y: yearInteger.
 	time := Time h: hoursInteger m: minutesInteger s: secondsInteger.
-	^self fromDate: date andTime: time! !
+	^self date: date time: time! !
 
 !Timestamp publicMethods!
 
@@ -1300,7 +1181,7 @@ isInScope: aClass
 !Date class publicMethods!
 
 d: dayInteger m: monthInteger y: yearInteger
-	^self newDay: dayInteger monthNumber: monthInteger year: yearInteger! !
+	^self newDay: dayInteger monthIndex: monthInteger year: yearInteger! !
 
 !Date publicMethods!
 
@@ -1423,7 +1304,28 @@ asSourceFor: targetClass
 	^printvalue sourceWithPrinter: printer!
 
 printvalueWith: printer
-	^LiteralPrintvalue string: self storeString! !
+	^LiteralPrintvalue string: self storeString!
+
+literalString
+	"<String | nil>
+	answers a string iff the receiver can be printed so that the compiler reconstructs the receiver from it"
+
+	^nil! !
+
+!Object publicMethods!
+
+isLiteral
+	^self literalString notNil! !
+
+!Object publicMethods!
+
+beImmutable
+	self markReadOnly: true.
+	^self!
+
+beMutable
+	self markReadOnly: false.
+	^self! !
 
 !Point publicMethods!
 
