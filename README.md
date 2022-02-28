@@ -1,5 +1,5 @@
 # VASTValues
-FileOut of the **Values** project for **VA Smalltalk**.
+FileOut of the **Values** project for **VA Smalltalk** (see [VA Smalltalk porting page](https://wiki.pdftalk.de/doku.php?id=vastport) for details).
 
 The Smalltalk files (.vast.st) are to be filed-in into a [VA Smalltalk 10.0.2](https://www.instantiations.com/vast-platform/) image.
 
