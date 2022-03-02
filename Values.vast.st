@@ -1308,7 +1308,7 @@ printvalueWith: printer
 
 literalString
 	"<String | nil>
-	answers a string iff the receiver can be printed so that the compiler reconstructs the receiver from it"
+	answers a string if the receiver can be printed so that the compiler reconstructs the receiver from it"
 
 	^nil! !
 
