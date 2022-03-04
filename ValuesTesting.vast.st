@@ -1,8 +1,8 @@
-'From VisualWorksÂ®, 8.3 of 28. Juli 2017 on 28. Februar 2022 at 19:05:30'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 4. März 2022 at 19:04:53'!
 
-"Created 28. Februar 2022 um 19:05:30 by VA Smalltalk Transform(1.4.0.1,chaider)"
+"Created 4. März 2022 um 19:04:53 by VA Smalltalk Transform(1.4.0.1,chaider)"
 Application create: #ValuesTestingApp with: 
-    (#( ValuesApp SUnit EsParsing )
+    (#( ValuesApp SUnit EsParsing EmImageSupport )
         collect: [:each | Smalltalk at: each ifAbsent: [
             Application errorPrerequisite: #ValuesTestingApp missing: each]])!
 
@@ -37,7 +37,7 @@ prerequisiteParcels
 	^#(#('SUnitToo' ''))!
 
 storeVersion
-	^'3.0.0.0'!
+	^'3.0.0.1'!
 
  !TestCase
 	subclass: #ValuemapTests
@@ -80,6 +80,9 @@ constant: constantSymbol optional: optionalSymbol array: arrayArray dictionary: 
 		array: arrayArray
 		dictionary: dictionaryDictionary.
 	^inst! !
+
+Testvalue class addSelectors: #(#constant:optional:array:dictionary:) toCategories: #('instance creation')
+!
 
 !Testvalue class publicMethods!
 
@@ -141,6 +144,9 @@ constant: constantSymbol optional: optionalSymbol dictionary: dictionaryDictiona
 		dictionary: dictionaryDictionary.
 	^inst! !
 
+Testvalue class addSelectors: #(#constant: #constant:array: #constant:array:dictionary: #constant:dictionary: #constant:optional: #constant:optional:array: #constant:optional:dictionary:) toCategories: #('instance creation optional')
+!
+
 !Testvalue class publicMethods!
 
 localSpecification
@@ -148,6 +154,9 @@ localSpecification
 	<optional: #optional class: #(#Symbol) default: '#none'>
 	<sequence: #array>
 	<map: #dictionary>! !
+
+Testvalue class addSelectors: #(#localSpecification) toCategories: #('specification')
+!
 
 !Testvalue class publicMethods!
 
@@ -159,6 +168,9 @@ example
 		dictionary: (Valuemap
 			with: 1 -> #symbol
 			with: #key -> 'string')! !
+
+Testvalue class addSelectors: #(#example) toCategories: #('test instances')
+!
 
 !Testvalue publicMethods!
 
@@ -182,6 +194,9 @@ optional
 
 	^optional ifNil: [#none]! !
 
+Testvalue addSelectors: #(#array #constant #dictionary #optional) toCategories: #('accessing')
+!
+
 !Testvalue publicMethods!
 
 initializeConstant: constantSymbol optional: optionalSymbol array: arrayArray dictionary: dictionaryDictionary
@@ -197,12 +212,18 @@ initializeConstant: constantSymbol optional: optionalSymbol array: arrayArray di
 			dictionary := (Valuemap withAll: dictionaryDictionary) beImmutable].
 	self beImmutable! !
 
+Testvalue addSelectors: #(#initializeConstant:optional:array:dictionary:) toCategories: #('initialize-release')
+!
+
 !Testvalue publicMethods!
 
 passInstVars
 	"for OpenTalk StSt"
 
 	^#(#default #default #default #value)! !
+
+Testvalue addSelectors: #(#passInstVars) toCategories: #('marshaling')
+!
 
 !Testvalue publicMethods!
 
@@ -214,6 +235,9 @@ printvalueWith: printer
 	args add: (printer array: 'array' value: self array).
 	args add: (printer dictionary: 'dictionary' value: self dictionary).
 	^printer printvalue: self arguments: args! !
+
+Testvalue addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
 
 !ValuemapTests publicMethods!
 
@@ -266,8 +290,8 @@ testDescribe
 '((Valuemap new: 8)
 	add: #isinTitle -> ''ISIN'';
 	add: #isinValue -> ''DE0009999991'';
-	add: #bÃ¶rsenwertTitle -> ''BÃ¶rsenwert'';
-	add: #bÃ¶rsenwertValue -> ''99,9 Mrd. â‚¬'';
+	add: #börsenwertTitle -> ''Börsenwert'';
+	add: #börsenwertValue -> ''99,9 Mrd. €'';
 	add: #hochTiefTitle -> ''Hoch/Tief'';
 	add: #hochTiefValue -> ''10,00/20,00'';
 	add: #kgvTitle -> ''KGV'';
@@ -330,7 +354,7 @@ testKeyedAccess
 	self assert: (od at: #bar ifAbsent: [nil]) isNil.!
 
 testReadBackAllTestInstances
-	(Valuemap class organization listAtCategoryNamed: (Valuemap class whichCategoryIncludesSelector: #example)) do: [:sel |
+	(Valuemap class info selectorsIn: (Valuemap class categoriesFor: #example) first) do: [:sel |
 		| inst readInst |
 		inst := Valuemap perform: sel.
 		self shouldnt: [readInst := Compiler evaluate: inst asSource] raise: Error.
@@ -360,6 +384,9 @@ testRemoving
 	self assert: (od removeKey: #foo) = 'bar'.
 	self assert: od size = 1.
 	self assert: od keys asArray = #(#baz)! !
+
+ValuemapTests addSelectors: #(#testAdding #testAddingWithGrowth #testComparing #testDescribe #testDescribeAndReadBackNew #testEnumeration #testIndexedAccess #testIndexOf #testKeyedAccess #testReadBackAllTestInstances #testRemoving) toCategories: #('Testing')
+!
 
 !ValuePrinterTests publicMethods!
 
@@ -539,6 +566,9 @@ testTimestamp
 	self assert: (Timestamp d: 15 m: 7 y: 2007 h: 0) asSource = '(Timestamp d: 15 m: 7 y: 2007)'.
 	self assert: (Timestamp d: 15 m: 7 y: 2007) asSource = '(Timestamp d: 15 m: 7 y: 2007)'! !
 
+ValuePrinterTests addSelectors: #(#testArray #testArraySource #testColorValue #testDate #testDictionary #testDictionarySource #testDictionaryWithValues #testLiteralArrays #testLongDictionary #testNumbers #testOptionalConstantSource #testPoint #testTime #testTimestamp) toCategories: #('Testing')
+!
+
 !Valuemap class publicMethods!
 
 example
@@ -548,13 +578,16 @@ example
 	state := Valuemap new.
 	state at: #isinTitle put: 'ISIN'.
 	state at: #isinValue put: 'DE0009999991'.
-	state at: #bÃ¶rsenwertTitle put: 'BÃ¶rsenwert'.
-	state at: #bÃ¶rsenwertValue put: '99,9 Mrd. â‚¬'.
+	state at: #boersenwertTitle put: 'Börsenwert'.
+	state at: #boersenwertValue put: '99,9 Mrd. €'.
 	state at: #hochTiefTitle put: 'Hoch/Tief'.
 	state at: #hochTiefValue put: '10,00/20,00'.
 	state at: #kgvTitle put: 'KGV'.
 	state at: #kgvValue put: '9,87'.
 	^state! !
+
+Valuemap class addSelectors: #(#example) toCategories: #('test instances')
+!
 
 
 ValuesTestingApp initializeAfterLoad!

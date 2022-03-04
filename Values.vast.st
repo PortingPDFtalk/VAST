@@ -1,8 +1,8 @@
-'From VisualWorksÂ®, 8.3 of 28. Juli 2017 on 28. Februar 2022 at 19:05:26'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 4. März 2022 at 18:23:56'!
 
-"Created 28. Februar 2022 um 19:05:26 by VA Smalltalk Transform(1.4.0.1,chaider)"
+"Created 4. März 2022 um 18:23:56 by VA Smalltalk Transform(1.4.0.1,chaider)"
 Application create: #ValuesApp with: 
-    (#( Kernel )
+    (#( GreaseCoreApp GreaseVASTCoreApp )
         collect: [:each | Smalltalk at: each ifAbsent: [
             Application errorPrerequisite: #ValuesApp missing: each]])!
 
@@ -24,7 +24,7 @@ abtIsViewApplication
 notice
 	^'The MIT License
 
-Copyright Â© 2009-2018 Christian Haider
+Copyright © 2009-2018 Christian Haider
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,7 @@ parcelName
 	^'Values'!
 
 storeVersion
-	^'3.0.0.2'!
+	^'3.0.0.3'!
 
  !
 "VisualWorks stub classes"
@@ -297,10 +297,16 @@ arguments: argumentsArray
 	inst initializeArguments: argumentsArray.
 	^inst! !
 
+ArrayPrintvalue class addSelectors: #(#arguments:) toCategories: #('instance creation')
+!
+
 !ArrayPrintvalue class publicMethods!
 
 localSpecification
 	<sequence: #arguments>! !
+
+ArrayPrintvalue class addSelectors: #(#localSpecification) toCategories: #('specification')
+!
 
 !ArrayPrintvalue publicMethods!
 
@@ -312,6 +318,9 @@ arguments
 sourceWith: emitter
 	emitter emitArraySourceFor: self arguments! !
 
+ArrayPrintvalue addSelectors: #(#arguments #sourceWith:) toCategories: #('accessing')
+!
+
 !ArrayPrintvalue publicMethods!
 
 initializeArguments: argumentsArray
@@ -319,6 +328,9 @@ initializeArguments: argumentsArray
 	argumentsArray notEmpty]) ifTrue: [
 			arguments := (Array withAll: argumentsArray) beImmutable].
 	self beImmutable! !
+
+ArrayPrintvalue addSelectors: #(#initializeArguments:) toCategories: #('initialize-release')
+!
 
 !ArrayPrintvalue publicMethods!
 
@@ -328,12 +340,18 @@ printvalueWith: printer
 	args add: (printer array: 'arguments' value: self arguments).
 	^printer printvalue: self arguments: args! !
 
+ArrayPrintvalue addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
+
 !ArrayPrintvalue publicMethods!
 
 isLine
 	^self arguments size = 1 or: [
 	self arguments size < 5 and: [
 	self arguments allSatisfy: [:arg | arg isSimple]]]! !
+
+ArrayPrintvalue addSelectors: #(#isLine) toCategories: #('testing')
+!
 
 !Blockemitter publicMethods!
 
@@ -342,17 +360,26 @@ initializePrinter: aPrinter stream: aWriteStream level: anInteger
 	stream := aWriteStream.
 	level := anInteger + 1! !
 
+Blockemitter addSelectors: #(#initializePrinter:stream:level:) toCategories: #('initialize-release')
+!
+
 !Blockemitter publicMethods!
 
 emitSeparator
 	self stream cr.
 	self level + 1 timesRepeat: [self stream tab]! !
 
+Blockemitter addSelectors: #(#emitSeparator) toCategories: #('writing')
+!
+
 !DictionaryPrintargument class publicMethods!
 
 localSpecification
 	<constant: #name class: #(#Printvalue)>
 	<constant: #value class: #(#Printvalue)>! !
+
+DictionaryPrintargument class addSelectors: #(#localSpecification) toCategories: #('specification')
+!
 
 !DictionaryPrintvalue class publicMethods!
 
@@ -362,6 +389,9 @@ arguments: argumentsArray isOrdered: isOrderedBoolean
 	inst initializeArguments: argumentsArray isOrdered: isOrderedBoolean.
 	^inst! !
 
+DictionaryPrintvalue class addSelectors: #(#arguments:isOrdered:) toCategories: #('instance creation')
+!
+
 !DictionaryPrintvalue class publicMethods!
 
 arguments: argumentsArray
@@ -370,11 +400,17 @@ arguments: argumentsArray
 isOrdered: isOrderedBoolean
 	^self arguments: nil isOrdered: isOrderedBoolean! !
 
+DictionaryPrintvalue class addSelectors: #(#arguments: #isOrdered:) toCategories: #('instance creation optional')
+!
+
 !DictionaryPrintvalue class publicMethods!
 
 localSpecification
 	<sequence: #arguments>
 	<optional: #isOrdered class: #(#Boolean) default: 'false'>! !
+
+DictionaryPrintvalue class addSelectors: #(#localSpecification) toCategories: #('specification')
+!
 
 !DictionaryPrintvalue publicMethods!
 
@@ -401,6 +437,9 @@ targetClass
 targetClassname
 	^self targetClass name asString! !
 
+DictionaryPrintvalue addSelectors: #(#arguments #isOrdered #sourceWith: #targetClass #targetClassname) toCategories: #('accessing')
+!
+
 !DictionaryPrintvalue publicMethods!
 
 initializeArguments: argumentsArray isOrdered: isOrderedBoolean
@@ -412,6 +451,9 @@ initializeArguments: argumentsArray isOrdered: isOrderedBoolean
 			isOrdered := isOrderedBoolean].
 	self beImmutable! !
 
+DictionaryPrintvalue addSelectors: #(#initializeArguments:isOrdered:) toCategories: #('initialize-release')
+!
+
 !DictionaryPrintvalue publicMethods!
 
 printvalueWith: printer
@@ -421,6 +463,9 @@ printvalueWith: printer
 	args add: (printer optional: 'isOrdered' value: isOrdered).
 	^printer printvalue: self arguments: args! !
 
+DictionaryPrintvalue addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
+
 !DictionaryPrintvalue publicMethods!
 
 isEmpty
@@ -428,6 +473,9 @@ isEmpty
 
 isLine
 	^self isEmpty! !
+
+DictionaryPrintvalue addSelectors: #(#isEmpty #isLine) toCategories: #('testing')
+!
 
 !Emitter class publicMethods!
 
@@ -442,6 +490,9 @@ for: aPrinter on: aWriteStream at: anInteger
 	inst := self new.
 	inst initializePrinter: aPrinter stream: aWriteStream level: anInteger.
 	^inst! !
+
+Emitter class addSelectors: #(#for: #for:on:at:) toCategories: #('instance creation')
+!
 
 !Emitter publicMethods!
 
@@ -477,12 +528,18 @@ streamClass
 
 	^self subclassResponsibility! !
 
+Emitter addSelectors: #(#emitterClassFor: #emitterFor: #level #printer #stream #streamClass) toCategories: #('accessing')
+!
+
 !Emitter publicMethods!
 
 initializePrinter: aPrinter stream: aWriteStream level: anInteger
 	printer := aPrinter.
 	stream := aWriteStream.
 	level := anInteger! !
+
+Emitter addSelectors: #(#initializePrinter:stream:level:) toCategories: #('initialize-release')
+!
 
 !Emitter publicMethods!
 
@@ -565,10 +622,16 @@ inBracketsDo: aZeroArgumentBlock
 	self stream nextPut: $(.
 	aZeroArgumentBlock ensure: [self stream nextPut: $)]! !
 
+Emitter addSelectors: #(#emit: #emitArgument: #emitArraySourceFor: #emitClass: #emitDictionarySourceFor: #emitEmpty: #emitLongCollection: #emitLongDictionary: #emitSeparator #emitSmallCollection: #emitSmallDictionary: #emitValue: #inBracketsDo:) toCategories: #('writing')
+!
+
 !Lineemitter publicMethods!
 
 emitSeparator
 	self stream space! !
+
+Lineemitter addSelectors: #(#emitSeparator) toCategories: #('writing')
+!
 
 !LiteralPrintvalue class publicMethods!
 
@@ -578,10 +641,16 @@ string: stringString
 	inst initializeString: stringString.
 	^inst! !
 
+LiteralPrintvalue class addSelectors: #(#string:) toCategories: #('instance creation')
+!
+
 !LiteralPrintvalue class publicMethods!
 
 localSpecification
 	<constant: #string class: #(#String)>! !
+
+LiteralPrintvalue class addSelectors: #(#localSpecification) toCategories: #('specification')
+!
 
 !LiteralPrintvalue publicMethods!
 
@@ -593,11 +662,17 @@ string
 
 	^string! !
 
+LiteralPrintvalue addSelectors: #(#sourceWith: #string) toCategories: #('accessing')
+!
+
 !LiteralPrintvalue publicMethods!
 
 initializeString: stringString
 	string := stringString.
 	self beImmutable! !
+
+LiteralPrintvalue addSelectors: #(#initializeString:) toCategories: #('initialize-release')
+!
 
 !LiteralPrintvalue publicMethods!
 
@@ -607,6 +682,9 @@ printvalueWith: printer
 	args add: (printer constant: 'string' value: self string).
 	^printer printvalue: self arguments: args! !
 
+LiteralPrintvalue addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
+
 !LiteralPrintvalue publicMethods!
 
 isLine
@@ -614,6 +692,9 @@ isLine
 
 isSimple
 	^(self string first = $() not! !
+
+LiteralPrintvalue addSelectors: #(#isLine #isSimple) toCategories: #('testing')
+!
 
 !Printargument class publicMethods!
 
@@ -623,11 +704,17 @@ name: nameString value: valuePrintvalue
 	inst initializeName: nameString value: valuePrintvalue.
 	^inst! !
 
+Printargument class addSelectors: #(#name:value:) toCategories: #('instance creation')
+!
+
 !Printargument class publicMethods!
 
 localSpecification
 	<constant: #name class: #(#String)>
 	<constant: #value class: #(#Printvalue)>! !
+
+Printargument class addSelectors: #(#localSpecification) toCategories: #('specification')
+!
 
 !Printargument publicMethods!
 
@@ -644,12 +731,18 @@ value
 
 	^value! !
 
+Printargument addSelectors: #(#name #sourceWith: #value) toCategories: #('accessing')
+!
+
 !Printargument publicMethods!
 
 initializeName: nameString value: valuePrintvalue
 	name := nameString.
 	value := valuePrintvalue.
 	self beImmutable! !
+
+Printargument addSelectors: #(#initializeName:value:) toCategories: #('initialize-release')
+!
 
 !Printargument publicMethods!
 
@@ -660,10 +753,16 @@ printvalueWith: printer
 	args add: (printer constant: 'value' value: self value).
 	^printer printvalue: self arguments: args! !
 
+Printargument addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
+
 !Printargument publicMethods!
 
 isSimple
 	^self value isSimple! !
+
+Printargument addSelectors: #(#isSimple) toCategories: #('testing')
+!
 
 !Printvalue publicMethods!
 
@@ -707,6 +806,9 @@ textemitterClass
 		ifTrue: [TextLineemitter]
 		ifFalse: [TextBlockemitter]! !
 
+Printvalue addSelectors: #(#description #emitterClass #sourceFor: #sourceWith: #sourceWithPrinter: #textemitterClass) toCategories: #('accessing')
+!
+
 !Printvalue publicMethods!
 
 isLine
@@ -718,6 +820,9 @@ isSimple
 
 	^false! !
 
+Printvalue addSelectors: #(#isLine #isSimple) toCategories: #('testing')
+!
+
 !SourceEmitter publicMethods!
 
 emitterClassFor: printvalue
@@ -728,12 +833,18 @@ emitterClassFor: printvalue
 streamClass
 	^WriteStream! !
 
+SourceEmitter addSelectors: #(#emitterClassFor: #streamClass) toCategories: #('accessing')
+!
+
 !TextBlockemitter publicMethods!
 
 initializePrinter: aPrinter stream: aWriteStream level: anInteger
 	printer := aPrinter.
 	stream := aWriteStream.
 	level := anInteger + 1! !
+
+TextBlockemitter addSelectors: #(#initializePrinter:stream:level:) toCategories: #('initialize-release')
+!
 
 !TextBlockemitter publicMethods!
 
@@ -744,6 +855,9 @@ emitSeparator
 inBracketsDo: aZeroArgumentBlock
 	aZeroArgumentBlock value! !
 
+TextBlockemitter addSelectors: #(#emitSeparator #inBracketsDo:) toCategories: #('writing')
+!
+
 !TextEmitter publicMethods!
 
 emitterClassFor: printvalue
@@ -753,6 +867,9 @@ emitterClassFor: printvalue
 
 streamClass
 	^WriteStream! !
+
+TextEmitter addSelectors: #(#emitterClassFor: #streamClass) toCategories: #('accessing')
+!
 
 !TextEmitter publicMethods!
 
@@ -783,16 +900,25 @@ emitSmallDictionary: aDictionaryPrintvalue
 emitValue: aString
 	self emitBold: aString! !
 
+TextEmitter addSelectors: #(#emitArraySourceFor: #emitBold: #emitClass: #emitDictionarySourceFor: #emitSmallCollection: #emitSmallDictionary: #emitValue:) toCategories: #('writing')
+!
+
 !TextLineemitter publicMethods!
 
 emitSeparator
 	self stream space! !
+
+TextLineemitter addSelectors: #(#emitSeparator) toCategories: #('writing')
+!
 
 !Value class publicMethods!
 
 obsolete
 	self allInstancesDo: #beMutable.
 	super obsolete! !
+
+Value class addSelectors: #(#obsolete) toCategories: #('class initialization')
+!
 
 !Value class publicMethods!
 
@@ -808,6 +934,9 @@ resetNamedValuesRegistry
 	"self resetNamedValuesRegistry"
 
 	NamedValuesRegistry := nil! !
+
+Value class addSelectors: #(#primeRuntime #resetNamedValuesRegistry) toCategories: #('initialize-release')
+!
 
 !Value class publicMethods!
 
@@ -830,6 +959,9 @@ namedValuesRegistry
 	
 	^NamedValuesRegistry ifNil: [NamedValuesRegistry := Dictionary new]! !
 
+Value class addSelectors: #(#namedValuesAt: #namedValuesAt:ifAbsentPut: #namedValuesRegistry) toCategories: #('named values')
+!
+
 !Value class publicMethods!
 
 specificationPragmas
@@ -847,6 +979,9 @@ specificationPragmas
 		#map:
 		#map:comment:
 	)! !
+
+Value class addSelectors: #(#specificationPragmas) toCategories: #('pragmas')
+!
 
 !Value publicMethods!
 
@@ -868,11 +1003,17 @@ isEqualValue: anObject
 			^false]].
 	^true! !
 
+Value addSelectors: #(#= #hash #isEqualValue:) toCategories: #('comparing')
+!
+
 !Value publicMethods!
 
 postCopy
 	super postCopy.
 	self beImmutable! !
+
+Value addSelectors: #(#postCopy) toCategories: #('copying')
+!
 
 !Value publicMethods!
 
@@ -880,6 +1021,9 @@ passMode
 	"for OpenTalk StSt (Smalltalk to Smalltalk)"
 
 	^#value! !
+
+Value addSelectors: #(#passMode) toCategories: #('marshaling')
+!
 
 !Value publicMethods!
 
@@ -889,6 +1033,9 @@ printOn: stream
 printvalueWith: printer
 	^printer printvalue: self arguments: #()! !
 
+Value addSelectors: #(#printOn: #printvalueWith:) toCategories: #('printing')
+!
+
 !Value publicMethods!
 
 isEmpty
@@ -896,6 +1043,9 @@ isEmpty
 
 notEmpty
 	^self isEmpty not! !
+
+Value addSelectors: #(#isEmpty #notEmpty) toCategories: #('testing')
+!
 
 !Valuemap publicMethods!
 
@@ -909,10 +1059,16 @@ last
 
 	^self associationAt: self keys last! !
 
+Valuemap addSelectors: #(#first #last) toCategories: #('accessing')
+!
+
 !Valuemap publicMethods!
 
 keysForPrinting
 	^self keys! !
+
+Valuemap addSelectors: #(#keysForPrinting) toCategories: #('printing')
+!
 
 !ValuePrinter class publicMethods!
 
@@ -921,6 +1077,9 @@ newFor: targetClass
 	inst := self new.
 	inst initializeTarget: targetClass.
 	^inst! !
+
+ValuePrinter class addSelectors: #(#newFor:) toCategories: #('instance creation')
+!
 
 !ValuePrinter publicMethods!
 
@@ -967,10 +1126,16 @@ target
 
 	^target! !
 
+ValuePrinter addSelectors: #(#array:value: #classnameOf: #constant:value: #dictionary:value: #optional:value: #printvalue:arguments: #target) toCategories: #('accessing')
+!
+
 !ValuePrinter publicMethods!
 
 initializeTarget: targetClass
 	target := targetClass! !
+
+ValuePrinter addSelectors: #(#initializeTarget:) toCategories: #('initialize-release')
+!
 
 !ValuePrintvalue class publicMethods!
 
@@ -980,16 +1145,25 @@ classname: classnameString arguments: argumentsArray
 	inst initializeClassname: classnameString arguments: argumentsArray.
 	^inst! !
 
+ValuePrintvalue class addSelectors: #(#classname:arguments:) toCategories: #('instance creation')
+!
+
 !ValuePrintvalue class publicMethods!
 
 classname: classnameString
 	^self classname: classnameString arguments: nil! !
+
+ValuePrintvalue class addSelectors: #(#classname:) toCategories: #('instance creation optional')
+!
 
 !ValuePrintvalue class publicMethods!
 
 localSpecification
 	<constant: #classname class: #(#String)>
 	<sequence: #arguments>! !
+
+ValuePrintvalue class addSelectors: #(#localSpecification) toCategories: #('specification')
+!
 
 !ValuePrintvalue publicMethods!
 
@@ -1012,6 +1186,9 @@ sourceWith: emitter
 			emitter emitSeparator.
 			emitter emitArgument: arg]]! !
 
+ValuePrintvalue addSelectors: #(#arguments #classname #sourceWith:) toCategories: #('accessing')
+!
+
 !ValuePrintvalue publicMethods!
 
 initializeClassname: classnameString arguments: argumentsArray
@@ -1020,6 +1197,9 @@ initializeClassname: classnameString arguments: argumentsArray
 	argumentsArray notEmpty]) ifTrue: [
 			arguments := (Array withAll: argumentsArray) beImmutable].
 	self beImmutable! !
+
+ValuePrintvalue addSelectors: #(#initializeClassname:arguments:) toCategories: #('initialize-release')
+!
 
 !ValuePrintvalue publicMethods!
 
@@ -1030,6 +1210,9 @@ printvalueWith: printer
 	args add: (printer array: 'arguments' value: self arguments).
 	^printer printvalue: self arguments: args! !
 
+ValuePrintvalue addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
+
 !ValuePrintvalue publicMethods!
 
 isLine
@@ -1037,6 +1220,9 @@ isLine
 		^self arguments first value isLine].
 	^self arguments size < 5 and: [
 	self arguments allSatisfy: [:arg | arg isSimple]]! !
+
+ValuePrintvalue addSelectors: #(#isLine) toCategories: #('testing')
+!
 
 !ColorValue class publicMethods!
 
@@ -1054,6 +1240,9 @@ fromBytesRed: redByte green: greenByte blue: blueByte
 		scaledGreen: greenByte * scale // 255
 		scaledBlue: blueByte * scale // 255! !
 
+ColorValue class addSelectors: #(#fromByte: #fromBytes: #fromBytesRed:green:blue:) toCategories: #('instance creation')
+!
+
 !ColorValue class publicMethods!
 
 namedValueNames
@@ -1064,6 +1253,9 @@ namedValueNames
 	^#(#black #white
 	#red #green #blue
 	#cyan #magenta #yellow)! !
+
+ColorValue class addSelectors: #(#namedValueNames) toCategories: #('named values')
+!
 
 !ColorValue publicMethods!
 
@@ -1085,6 +1277,9 @@ rgbIndex
 
 	^self asByteArray inject: 0 into: [:num :byte | (num bitShift: 8) + byte]! !
 
+ColorValue addSelectors: #(#asByteArray #asGrayValue #rgbIndex) toCategories: #('converting')
+!
+
 !ColorValue publicMethods!
 
 printvalueWith: printer
@@ -1097,12 +1292,18 @@ printvalueWith: printer
 	args add: (printer constant: 'blue' value: (self blue * 255) rounded).
 	^printer printvalue: self arguments: args! !
 
+ColorValue addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
+
 !ColorValue publicMethods!
 
 isEmpty
 	^self scaledRed isNil and: [
 	self scaledGreen isNil and: [
 	self scaledBlue isNil]]! !
+
+ColorValue addSelectors: #(#isEmpty) toCategories: #('testing')
+!
 
 !Timestamp class publicMethods!
 
@@ -1120,6 +1321,9 @@ d: dayInteger m: monthInteger y: yearInteger h: hoursInteger m: minutesInteger s
 	date := Date d: dayInteger m: monthInteger y: yearInteger.
 	time := Time h: hoursInteger m: minutesInteger s: secondsInteger.
 	^self date: date time: time! !
+
+Timestamp class addSelectors: #(#d:m:y: #d:m:y:h: #d:m:y:h:m: #d:m:y:h:m:s:) toCategories: #('instance creation')
+!
 
 !Timestamp publicMethods!
 
@@ -1159,6 +1363,9 @@ printvalueWith: printer
 		nextPut: $).
 	^LiteralPrintvalue string: wst contents! !
 
+Timestamp addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
+
 !Class publicMethods!
 
 nameRelativeTo: targetClass
@@ -1167,6 +1374,9 @@ nameRelativeTo: targetClass
 	"there are no namespaces in VA"
 
 	^self name asString! !
+
+Class addSelectors: #(#nameRelativeTo:) toCategories: #('accessing')
+!
 
 !Class publicMethods!
 
@@ -1178,10 +1388,16 @@ isInScope: aClass
 
 	^true! !
 
+Class addSelectors: #(#isInScope:) toCategories: #('testing')
+!
+
 !Date class publicMethods!
 
 d: dayInteger m: monthInteger y: yearInteger
 	^self newDay: dayInteger monthIndex: monthInteger year: yearInteger! !
+
+Date class addSelectors: #(#d:m:y:) toCategories: #('instance creation')
+!
 
 !Date publicMethods!
 
@@ -1200,10 +1416,16 @@ printvalueWith: printer
 		nextPut: $).
 	^LiteralPrintvalue string: wst contents! !
 
+Date addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
+
 !Dictionary publicMethods!
 
 isEqualValue: anObject
 	^self contentsEquals: anObject! !
+
+Dictionary addSelectors: #(#isEqualValue:) toCategories: #('dictionary testing')
+!
 
 !Dictionary publicMethods!
 
@@ -1222,10 +1444,16 @@ printargumentsWith: printer
 printvalueWith: printer
 	^DictionaryPrintvalue arguments: (self printargumentsWith: printer)! !
 
+Dictionary addSelectors: #(#keysForPrinting #printargumentsWith: #printvalueWith:) toCategories: #('printing')
+!
+
 !Duration class publicMethods!
 
 nanoseconds: aNumber
 	^aNumber nanoseconds! !
+
+Duration class addSelectors: #(#nanoseconds:) toCategories: #('instance creation')
+!
 
 !Duration publicMethods!
 
@@ -1239,6 +1467,9 @@ printvalueWith: printer
 		nextPutAll: self asNanoseconds printString;
 		nextPut: $).
 	^LiteralPrintvalue string: wst contents! !
+
+Duration addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
 
 !Object class publicMethods!
 
@@ -1266,10 +1497,16 @@ newNamesByValues
 	self namedValueNames do: [:symbol | dict at: (self perform: symbol) put: symbol].
 	^dict! !
 
+Object class addSelectors: #(#namedValueNames #nameOrNilFor: #namesByValues #newNamesByValues) toCategories: #('named values')
+!
+
 !Object publicMethods!
 
 isEqualValue: anObject
 	^self = anObject! !
+
+Object addSelectors: #(#isEqualValue:) toCategories: #('comparing')
+!
 
 !Object publicMethods!
 
@@ -1312,10 +1549,8 @@ literalString
 
 	^nil! !
 
-!Object publicMethods!
-
-isLiteral
-	^self literalString notNil! !
+Object addSelectors: #(#asDescription #asDescriptionFor: #asSource #asSourceFor: #printvalueWith: #literalString) toCategories: #('printing')
+!
 
 !Object publicMethods!
 
@@ -1327,12 +1562,18 @@ beMutable
 	self markReadOnly: false.
 	^self! !
 
+Object addSelectors: #(#beImmutable #beMutable) toCategories: #('actions')
+!
+
 !Point publicMethods!
 
 printvalueWith: printer
 	| string |
 	string := (self x asSourceFor: printer target) , ' @ ' , (self y asSourceFor: printer target).
 	^LiteralPrintvalue string: string! !
+
+Point addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
 
 !Rectangle publicMethods!
 
@@ -1347,12 +1588,18 @@ printvalueWith: printer
 		nextPut: $).
 	^LiteralPrintvalue string: wst contents! !
 
+Rectangle addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
+
 !SequenceableCollection publicMethods!
 
 printvalueWith: printer
 	self isLiteral ifTrue: [
 		^LiteralPrintvalue string: self storeString].
 	^ArrayPrintvalue arguments: (self collect: [:item | item printvalueWith: printer])! !
+
+SequenceableCollection addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
 
 !Time class publicMethods!
 
@@ -1370,6 +1617,9 @@ h: hoursInteger m: minutesInteger s: secondsInteger
 
 zero
 	^self h: 0! !
+
+Time class addSelectors: #(#h: #h:m: #h:m:s: #zero) toCategories: #('instance creation')
+!
 
 !Time publicMethods!
 
@@ -1403,6 +1653,9 @@ printvalueWith: printer
 		nextPutAll: self seconds printString;
 		nextPut: $).
 	^LiteralPrintvalue string: wst contents! !
+
+Time addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
 
 
 ValuesApp initializeAfterLoad!
