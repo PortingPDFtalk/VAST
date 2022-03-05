@@ -1,6 +1,6 @@
-'From VisualWorks®, 8.3 of 28. Juli 2017 on 4. März 2022 at 18:23:56'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 5. März 2022 at 18:33:34'!
 
-"Created 4. März 2022 um 18:23:56 by VA Smalltalk Transform(1.4.0.1,chaider)"
+"Created 5. März 2022 um 18:33:34 by VA Smalltalk Transform(1.4.0.2,chaider)"
 Application create: #ValuesApp with: 
     (#( GreaseCoreApp GreaseVASTCoreApp )
         collect: [:each | Smalltalk at: each ifAbsent: [
@@ -877,7 +877,9 @@ emitArraySourceFor: anArray
 	self emitSmallCollection: anArray!
 
 emitBold: aString
-	self stream nextPutAllText: aString asText allBold!
+	"could not find bold text"
+
+	self stream nextPutAll: aString!
 
 emitClass: aString
 	self emitBold: aString!
@@ -1049,17 +1051,30 @@ Value addSelectors: #(#isEmpty #notEmpty) toCategories: #('testing')
 
 !Valuemap publicMethods!
 
+atIndex: anIndex
+	"<Association>"
+
+	anIndex isInteger ifFalse: [
+		^ExCLDTInvalidArgument signalWith: anIndex].
+	^self associationAtIndex: anIndex ifAbsent: [
+		ExCLDTIndexOutOfRange signalWith: anIndex]!
+
 first
 	"<Association>"
 
 	^self associationAt: self keys first!
+
+indexOf: aKey
+	"<Integer>"
+
+	^self keys indexOf: aKey!
 
 last
 	"<Association>"
 
 	^self associationAt: self keys last! !
 
-Valuemap addSelectors: #(#first #last) toCategories: #('accessing')
+Valuemap addSelectors: #(#atIndex: #first #indexOf: #last) toCategories: #('accessing')
 !
 
 !Valuemap publicMethods!
@@ -1366,6 +1381,49 @@ printvalueWith: printer
 Timestamp addSelectors: #(#printvalueWith:) toCategories: #('printing')
 !
 
+!Character publicMethods!
+
+isLiteral
+	^true!
+
+ !
+
+Character addSelectors: #(#isLiteral) toCategories: #('printing')!
+
+!EsString publicMethods!
+
+literalString
+	^self storeString!
+
+ !
+
+EsString addSelectors: #(#literalString) toCategories: #('printing')!
+
+!Symbol publicMethods!
+
+literalString
+	self asString isSmalltalkIdentifier ifTrue: [
+		^self printString].
+	^self storeString!
+
+ !
+
+Symbol addSelectors: #(#literalString) toCategories: #('printing')!
+
+!Array publicMethods!
+
+literalString
+	| wst |
+	wst := String new writeStream.
+	wst nextPutAll: '#('.
+	self do: [:elem | wst nextPutAll: elem asSource] separatedBy: [wst space].
+	wst nextPut: $).
+	^wst contents!
+
+ !
+
+Array addSelectors: #(#literalString) toCategories: #('printing')!
+
 !Class publicMethods!
 
 nameRelativeTo: targetClass
@@ -1595,10 +1653,15 @@ Rectangle addSelectors: #(#printvalueWith:) toCategories: #('printing')
 
 printvalueWith: printer
 	self isLiteral ifTrue: [
-		^LiteralPrintvalue string: self storeString].
+		^LiteralPrintvalue string: self literalString].
+	^ArrayPrintvalue arguments: (self collect: [:item | item printvalueWith: printer])!
+
+printvalueWith: printer
+	self isLiteral ifTrue: [
+		^LiteralPrintvalue string: self literalString].
 	^ArrayPrintvalue arguments: (self collect: [:item | item printvalueWith: printer])! !
 
-SequenceableCollection addSelectors: #(#printvalueWith:) toCategories: #('printing')
+SequenceableCollection addSelectors: #(#printvalueWith: #printvalueWith:) toCategories: #('printing')
 !
 
 !Time class publicMethods!

@@ -1,6 +1,6 @@
-'From VisualWorks®, 8.3 of 28. Juli 2017 on 4. März 2022 at 19:04:53'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 5. März 2022 at 18:33:38'!
 
-"Created 4. März 2022 um 19:04:53 by VA Smalltalk Transform(1.4.0.1,chaider)"
+"Created 5. März 2022 um 18:33:38 by VA Smalltalk Transform(1.4.0.2,chaider)"
 Application create: #ValuesTestingApp with: 
     (#( ValuesApp SUnit EsParsing EmImageSupport )
         collect: [:each | Smalltalk at: each ifAbsent: [
@@ -286,12 +286,11 @@ testComparing
 	self deny: (Valuemap with: #foo -> 'bar' with: $a -> 123) = (Valuemap with: #foo -> 'bar' with: $a -> 123 with: '' -> 0).!
 
 testDescribe
-	self assert: Valuemap example asSource = 
-'((Valuemap new: 8)
+	self assert: Valuemap example asSource = '((Valuemap new: 8)
 	add: #isinTitle -> ''ISIN'';
 	add: #isinValue -> ''DE0009999991'';
-	add: #börsenwertTitle -> ''Börsenwert'';
-	add: #börsenwertValue -> ''99,9 Mrd. €'';
+	add: #boersenwertTitle -> ''Börsenwert'';
+	add: #boersenwertValue -> ''99,9 Mrd. €'';
 	add: #hochTiefTitle -> ''Hoch/Tief'';
 	add: #hochTiefValue -> ''10,00/20,00'';
 	add: #kgvTitle -> ''KGV'';
@@ -422,7 +421,7 @@ testArraySource
 		constant: #constantSymbol
 		optional: #optionalSymbol
 		array: #(1 #a $x 'name')
-		dictionary: (Dictionary
+		dictionary: (Valuemap
 			with: 1 -> #symbol
 			with: #key -> 'string')) asSource = '(Testvalue
 	constant: #constantSymbol
@@ -455,7 +454,7 @@ testDictionarySource
 		constant: #constantSymbol
 		optional: #optionalSymbol
 		array: #(1 #a $x 'name')
-		dictionary: (Dictionary
+		dictionary: (Valuemap
 			with: 1 -> #symbol
 			with: #key -> 'string')) asSource = '(Testvalue
 	constant: #constantSymbol
@@ -526,7 +525,7 @@ testOptionalConstantSource
 		constant: #constantSymbol
 		optional: #optionalSymbol
 		array: #(1 #a $x 'name')
-		dictionary: (Dictionary
+		dictionary: (Valuemap
 			with: 1 -> #symbol
 			with: #key -> 'string')) asSource = '(Testvalue
 	constant: #constantSymbol
