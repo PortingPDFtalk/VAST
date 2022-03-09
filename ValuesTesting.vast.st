@@ -1,6 +1,6 @@
-'From VisualWorks®, 8.3 of 28. Juli 2017 on 5. März 2022 at 18:33:38'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 9. März 2022 at 18:01:03'!
 
-"Created 5. März 2022 um 18:33:38 by VA Smalltalk Transform(1.4.0.2,chaider)"
+"Created 9. März 2022 um 18:01:03 by VA Smalltalk Transform(1.4.0.3,chaider)"
 Application create: #ValuesTestingApp with: 
     (#( ValuesApp SUnit EsParsing EmImageSupport )
         collect: [:each | Smalltalk at: each ifAbsent: [
@@ -17,8 +17,9 @@ ValuesTestingApp becomeDefault!
 ValuesTestingApp becomeDefault!
 !ValuesTestingApp class privateMethods !
 abtIsViewApplication
-
-	^false! !
+	^false!
+initializeAfterLoad
+	(Smalltalk at: #Value) resetNamedValuesRegistry! !
 !ValuesTestingApp publicMethods!
 
 developmentPrerequisites
@@ -37,7 +38,7 @@ prerequisiteParcels
 	^#(#('SUnitToo' ''))!
 
 storeVersion
-	^'3.0.0.1'!
+	^'3.0.0.2'!
 
  !TestCase
 	subclass: #ValuemapTests

@@ -1,6 +1,6 @@
-'From VisualWorks®, 8.3 of 28. Juli 2017 on 5. März 2022 at 18:33:34'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 9. März 2022 at 18:01:02'!
 
-"Created 5. März 2022 um 18:33:34 by VA Smalltalk Transform(1.4.0.2,chaider)"
+"Created 9. März 2022 um 18:01:02 by VA Smalltalk Transform(1.4.0.3,chaider)"
 Application create: #ValuesApp with: 
     (#( GreaseCoreApp GreaseVASTCoreApp )
         collect: [:each | Smalltalk at: each ifAbsent: [
@@ -17,8 +17,9 @@ ValuesApp becomeDefault!
 ValuesApp becomeDefault!
 !ValuesApp class privateMethods !
 abtIsViewApplication
-
-	^false! !
+	^false!
+initializeAfterLoad
+	(Smalltalk at: #Value) resetNamedValuesRegistry! !
 !ValuesApp publicMethods!
 
 notice
@@ -1080,9 +1081,12 @@ Valuemap addSelectors: #(#atIndex: #first #indexOf: #last) toCategories: #('acce
 !Valuemap publicMethods!
 
 keysForPrinting
-	^self keys! !
+	^self keys!
 
-Valuemap addSelectors: #(#keysForPrinting) toCategories: #('printing')
+printvalueWith: printer
+	^DictionaryPrintvalue arguments: (self printargumentsWith: printer) isOrdered: true! !
+
+Valuemap addSelectors: #(#keysForPrinting #printvalueWith:) toCategories: #('printing')
 !
 
 !ValuePrinter class publicMethods!
@@ -1248,14 +1252,12 @@ fromBytes: threeBytes
 	^self fromBytesRed: threeBytes first green: (threeBytes at: 2) blue: threeBytes last!
 
 fromBytesRed: redByte green: greenByte blue: blueByte
-	| scale |
-	scale := ColorValue scalingValue.
-	^ColorValue
-		scaledRed: redByte * scale // 255
-		scaledGreen: greenByte * scale // 255
-		scaledBlue: blueByte * scale // 255! !
+	^self red: redByte / 255 green: greenByte / 255 blue: blueByte / 255!
 
-ColorValue class addSelectors: #(#fromByte: #fromBytes: #fromBytesRed:green:blue:) toCategories: #('instance creation')
+red: r green: g blue: b
+	^super red: r * 255 green: g * 255 blue: b * 255! !
+
+ColorValue class addSelectors: #(#fromByte: #fromBytes: #fromBytesRed:green:blue: #red:green:blue:) toCategories: #('instance creation')
 !
 
 !ColorValue class publicMethods!
@@ -1267,18 +1269,42 @@ namedValueNames
 	
 	^#(#black #white
 	#red #green #blue
-	#cyan #magenta #yellow)! !
+	#cyan #magenta #yellow)!
 
-ColorValue class addSelectors: #(#namedValueNames) toCategories: #('named values')
+black
+	^super black asColorValue!
+
+white
+	^super white asColorValue!
+
+red
+	^super red asColorValue!
+
+green
+	^super green asColorValue!
+
+blue
+	^super blue asColorValue!
+
+cyan
+	^super cyan asColorValue!
+
+magenta
+	^self fromBytesRed: 255 green: 0 blue: 255!
+
+yellow
+	^super yellow asColorValue! !
+
+ColorValue class addSelectors: #(#namedValueNames #black #white #red #green #blue #cyan #magenta #yellow) toCategories: #('named values')
 !
 
 !ColorValue publicMethods!
 
 asByteArray
 	^ByteArray
-		with: (self scaledRed bitShift: -5)
-		with: (self scaledGreen bitShift: -5)
-		with: (self scaledBlue bitShift: -5)!
+		with: (self red * 255) truncated
+		with: (self green * 255) truncated
+		with: (self blue * 255) truncated!
 
 asGrayValue
 	"<Number>
@@ -1290,9 +1316,18 @@ rgbIndex
 	"<Integer>
 	Three 8 bit RGB numbers interpreted as number for ordering"
 
-	^self asByteArray inject: 0 into: [:num :byte | (num bitShift: 8) + byte]! !
+	^self asByteArray inject: 0 into: [:num :byte | (num bitShift: 8) + byte]!
 
-ColorValue addSelectors: #(#asByteArray #asGrayValue #rgbIndex) toCategories: #('converting')
+asColorValue
+	^self!
+
+asByteArray
+	^ByteArray
+		with: (self red * 255) truncated
+		with: (self green * 255) truncated
+		with: (self blue * 255) truncated! !
+
+ColorValue addSelectors: #(#asByteArray #asGrayValue #rgbIndex #asColorValue #asByteArray) toCategories: #('converting')
 !
 
 !ColorValue publicMethods!
@@ -1313,11 +1348,56 @@ ColorValue addSelectors: #(#printvalueWith:) toCategories: #('printing')
 !ColorValue publicMethods!
 
 isEmpty
-	^self scaledRed isNil and: [
-	self scaledGreen isNil and: [
-	self scaledBlue isNil]]! !
+	^false!
 
-ColorValue addSelectors: #(#isEmpty) toCategories: #('testing')
+= anObject
+	^self class == anObject class and: [
+	self red = anObject red and: [
+	self green = anObject green and: [
+	self blue = anObject blue]]]! !
+
+ColorValue addSelectors: #(#isEmpty #=) toCategories: #('testing')
+!
+
+!ColorValue publicMethods!
+
+red
+	"<Number[0..1]>
+	the red part of the receiver"
+
+	^super red / 16rFFFF!
+
+green
+	"<Number[0..1]>
+	the green part of the receiver"
+
+	^super green / 16rFFFF!
+
+blue
+	"<Number[0..1]>
+	the blue part of the receiver"
+
+	^super blue / 16rFFFF!
+
+cyan
+	"<Number[0..1]>
+	the cyan part of the receiver"
+
+	^1.0 - self red!
+
+magenta
+	"<Number[0..1]>
+	the magenta part of the receiver"
+
+	^1.0 - self green!
+
+yellow
+	"<Number[0..1]>
+	the yellow part of the receiver"
+
+	^1.0 - self blue! !
+
+ColorValue addSelectors: #(#red #green #blue #cyan #magenta #yellow) toCategories: #('accessing')
 !
 
 !Timestamp class publicMethods!
@@ -1381,15 +1461,6 @@ printvalueWith: printer
 Timestamp addSelectors: #(#printvalueWith:) toCategories: #('printing')
 !
 
-!Character publicMethods!
-
-isLiteral
-	^true!
-
- !
-
-Character addSelectors: #(#isLiteral) toCategories: #('printing')!
-
 !EsString publicMethods!
 
 literalString
@@ -1423,6 +1494,42 @@ literalString
  !
 
 Array addSelectors: #(#literalString) toCategories: #('printing')!
+
+!KeyedCollection publicMethods!
+
+keysForPrinting
+	^[self keys asSortedCollection] on: Error do: [:ex | ex return: self keys]!
+
+printargumentsWith: printer
+	| args |
+	args := OrderedCollection new.
+	self keysForPrinting do: [:key |
+		args add: (DictionaryPrintargument
+			name: (key printvalueWith: printer)
+			value: ((self at: key) printvalueWith: printer))].
+	^args!
+
+ !
+
+KeyedCollection addSelectors: #(#keysForPrinting #printargumentsWith:) toCategories: #('printing')!
+
+!Color publicMethods!
+
+asColorValue
+	^ColorValue red: self red / 16rFFFF green: self green / 16rFFFF blue: self blue / 16rFFFF!
+
+ !
+
+Color addSelectors: #(#asColorValue) toCategories: #('converting')!
+
+!Character publicMethods!
+
+isLiteral
+	^true!
+
+ !
+
+Character addSelectors: #(#isLiteral) toCategories: #('printing')!
 
 !Class publicMethods!
 
