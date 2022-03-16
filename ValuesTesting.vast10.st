@@ -1,12 +1,12 @@
-'From VisualWorks®, 8.3 of 28. Juli 2017 on 11. März 2022 at 18:53:51'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 16. März 2022 at 09:53:54'!
 
-"Created 11. März 2022 um 18:53:51 by VA Smalltalk Transform(1.4.0.5,chaider)"
+"Created 16. März 2022 um 09:53:54 by VA Smalltalk Transform(1.4.0.8,chaider)"
 
 
-Application create: #ValuesTestingApp with: 
-    (#( ValuesApp SUnit EsParsing EmImageSupport )
-        collect: [:each | Smalltalk at: each ifAbsent: [
-            Application errorPrerequisite: #ValuesTestingApp missing: each]])!
+Application create: #ValuesTestingApp with:
+	(#(ValuesApp SUnit EsParsing EmImageSupport)
+		collect: [:className | Smalltalk at: className ifAbsent: [
+			Application errorPrerequisite: #ValuesTestingApp missing: className]])!
 
 ValuesTestingApp becomeDefault!
 
@@ -590,18 +590,9 @@ example
 Valuemap class addSelectors: #(#example) toCategories: #('test instances')
 !
 
-EtTools managerInterface versionClass: ValuesTestingApp in: ValuesTestingApp withName: '3.0.0.2'!
-EtTools managerInterface versionClass: Valuemap in: ValuesTestingApp withName: '3.0.0.2'!
-EtTools managerInterface versionClass: Testvalue in: ValuesTestingApp withName: '3.0.0.2'!
-EtTools managerInterface versionClass: ValuemapTests in: ValuesTestingApp withName: '3.0.0.2'!
-EtTools managerInterface versionClass: ValuePrinterTests in: ValuesTestingApp withName: '3.0.0.2'!
-ValuesTestingApp releaseEachClassIn: ((OrderedCollection new)
-	add: ValuesTestingApp;
-	add: Valuemap;
-	add: Testvalue;
-	add: ValuemapTests;
-	add: ValuePrinterTests;
-	yourself)!
+ValuesTestingApp classes do: [:class |
+	EtTools managerInterface versionClass: class in: ValuesTestingApp withName: '3.0.0.2']!
+ValuesTestingApp releaseEachClassIn: ValuesTestingApp classes!
 EtTools managerInterface versionApplication: ValuesTestingApp withName: '3.0.0.2'!
 EtTools managerInterface flushCache!
 

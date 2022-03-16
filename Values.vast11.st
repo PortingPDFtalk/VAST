@@ -1,13 +1,13 @@
-'From VisualWorks®, 8.3 of 28. Juli 2017 on 11. März 2022 at 18:53:52'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 16. März 2022 at 09:53:55'!
 
-"Created 11. März 2022 um 18:53:52 by VA Smalltalk Transform(1.4.0.5,chaider)"
+"Created 16. März 2022 um 09:53:55 by VA Smalltalk Transform(1.4.0.8,chaider)"
 
 AbtFeatureLoader new loadFeatureMapsNamed: #('Platform Portability')!
 
-Application create: #ValuesApp with: 
-    (#( GreaseCoreApp GreaseVASTCoreApp )
-        collect: [:each | Smalltalk at: each ifAbsent: [
-            Application errorPrerequisite: #ValuesApp missing: each]])!
+Application create: #ValuesApp with:
+	(#(GreaseCoreApp GreaseVASTCoreApp)
+		collect: [:className | Smalltalk at: className ifAbsent: [
+			Application errorPrerequisite: #ValuesApp missing: className]])!
 
 ValuesApp becomeDefault!
 
@@ -1820,76 +1820,9 @@ printvalueWith: printer
 Time addSelectors: #(#printvalueWith:) toCategories: #('printing')
 !
 
-EtTools managerInterface versionClass: ValuesApp in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: TextLineemitter in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Printargument in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: SequenceableCollection in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Date in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Object in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: ColorValue in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Timestamp in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: SourceEmitter in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Blockemitter in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: ValuePrintvalue in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: ArrayPrintvalue in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Time in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: ValuePrinter in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Lineemitter in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: TextEmitter in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: DictionaryPrintargument in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: TextBlockemitter in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Dictionary in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Duration in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Valuemap in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: DictionaryPrintvalue in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Printvalue in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Point in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: LiteralPrintvalue in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Class in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Emitter in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Value in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Rectangle in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: KeyedCollection in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Symbol in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: EsString in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Color in: ValuesApp withName: '3.0.0.3'!
-EtTools managerInterface versionClass: Array in: ValuesApp withName: '3.0.0.3'!
-ValuesApp releaseEachClassIn: ((OrderedCollection new)
-	add: ValuesApp;
-	add: TextLineemitter;
-	add: Printargument;
-	add: SequenceableCollection;
-	add: Date;
-	add: Object;
-	add: ColorValue;
-	add: Timestamp;
-	add: SourceEmitter;
-	add: Blockemitter;
-	add: ValuePrintvalue;
-	add: ArrayPrintvalue;
-	add: Time;
-	add: ValuePrinter;
-	add: Lineemitter;
-	add: TextEmitter;
-	add: DictionaryPrintargument;
-	add: TextBlockemitter;
-	add: Dictionary;
-	add: Duration;
-	add: Valuemap;
-	add: DictionaryPrintvalue;
-	add: Printvalue;
-	add: Point;
-	add: LiteralPrintvalue;
-	add: Class;
-	add: Emitter;
-	add: Value;
-	add: Rectangle;
-	add: KeyedCollection;
-	add: Symbol;
-	add: EsString;
-	add: Color;
-	add: Array;
-	yourself)!
+ValuesApp classes do: [:class |
+	EtTools managerInterface versionClass: class in: ValuesApp withName: '3.0.0.3']!
+ValuesApp releaseEachClassIn: ValuesApp classes!
 EtTools managerInterface versionApplication: ValuesApp withName: '3.0.0.3'!
 EtTools managerInterface flushCache!
 
