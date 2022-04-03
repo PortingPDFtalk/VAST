@@ -1,6 +1,6 @@
-'From VisualWorks®, 8.3 of 28. Juli 2017 on 16. März 2022 at 09:53:53'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 3. April 2022 at 10:46:50'!
 
-"Created 16. März 2022 um 09:53:53 by VA Smalltalk Transform(1.4.0.8,chaider)"
+"Created 3. April 2022 um 10:46:50 by VA Smalltalk Transform(1.4.0.10,chaider)"
 
 
 Application create: #ValuesApp with:
@@ -16,11 +16,6 @@ Application subclass: #ValuesApp
 	classVariableNames: ''
 	poolDictionaries: ''!
 
-!ValuesApp class privateMethods !
-abtIsViewApplication
-	^false!
-initializeAfterLoad
-	(Smalltalk at: #Value) resetNamedValuesRegistry! !
 !ValuesApp publicMethods!
 
 notice
@@ -50,7 +45,7 @@ parcelName
 	^'Values'!
 
 storeVersion
-	^'3.0.0.3'!
+	^'3.0.1.0'!
 
  !
 "VisualWorks stub classes"
@@ -65,16 +60,6 @@ EsOrderedDictionary
 Valuemap comment: 'VisualWorks class'
 !
 
-Color
-	subclass: #ColorValue
-	classInstanceVariableNames: ''
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''!
-
-ColorValue comment: 'VisualWorks class'
-!
-
 DateAndTime
 	subclass: #Timestamp
 	classInstanceVariableNames: ''
@@ -83,6 +68,16 @@ DateAndTime
 	poolDictionaries: ''!
 
 Timestamp comment: 'VisualWorks class'
+!
+
+Color
+	subclass: #ColorValue
+	classInstanceVariableNames: ''
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''!
+
+ColorValue comment: 'VisualWorks class'
 !
 
 Object
@@ -879,9 +874,7 @@ emitArraySourceFor: anArray
 	self emitSmallCollection: anArray!
 
 emitBold: aString
-	"could not find bold text"
-
-	self stream nextPutAll: aString!
+	self stream nextPutAllText: aString asText allBold!
 
 emitClass: aString
 	self emitBold: aString!
@@ -985,6 +978,17 @@ specificationPragmas
 	)! !
 
 Value class addSelectors: #(#specificationPragmas) toCategories: #('pragmas')
+!
+
+!Value class publicMethods!
+
+localSpecification
+	"specification of the constants with pragmas.
+	Only for the instvars defined in this class - access the full specification with #specification"
+
+	^self subclassResponsibility! !
+
+Value class addSelectors: #(#localSpecification) toCategories: #('specification')
 !
 
 !Value publicMethods!
@@ -1272,6 +1276,9 @@ namedValueNames
 	#red #green #blue
 	#cyan #magenta #yellow)!
 
+new
+	^self basicNew!
+
 black
 	^super black asColorValue!
 
@@ -1296,7 +1303,7 @@ magenta
 yellow
 	^super yellow asColorValue! !
 
-ColorValue class addSelectors: #(#namedValueNames #black #white #red #green #blue #cyan #magenta #yellow) toCategories: #('named values')
+ColorValue class addSelectors: #(#namedValueNames #new #black #white #red #green #blue #cyan #magenta #yellow) toCategories: #('named values')
 !
 
 !ColorValue publicMethods!
@@ -1349,7 +1356,9 @@ ColorValue addSelectors: #(#printvalueWith:) toCategories: #('printing')
 !ColorValue publicMethods!
 
 isEmpty
-	^false!
+	^red isNil and: [
+	green isNil and: [
+	blue isNil]]!
 
 = anObject
 	^self class == anObject class and: [
@@ -1366,19 +1375,19 @@ red
 	"<Number[0..1]>
 	the red part of the receiver"
 
-	^super red / 16rFFFF!
+	^red ifNotNil: [super red / 16rFFFF]!
 
 green
 	"<Number[0..1]>
 	the green part of the receiver"
 
-	^super green / 16rFFFF!
+	^green ifNotNil: [super green / 16rFFFF]!
 
 blue
 	"<Number[0..1]>
 	the blue part of the receiver"
 
-	^super blue / 16rFFFF!
+	^blue ifNotNil: [super blue / 16rFFFF]!
 
 cyan
 	"<Number[0..1]>
@@ -1462,14 +1471,98 @@ printvalueWith: printer
 Timestamp addSelectors: #(#printvalueWith:) toCategories: #('printing')
 !
 
+!ValuesApp class publicMethods!
+
+initializeAfterLoad
+	(Smalltalk at: #Value) resetNamedValuesRegistry!
+
+ !
+
+ValuesApp class addSelectors: #(#initializeAfterLoad) toCategories: #('startup')!
+
+!ValuesApp class publicMethods!
+
+abtIsViewApplication
+	^false!
+
+ !
+
+ValuesApp class addSelectors: #(#abtIsViewApplication) toCategories: #('testing')!
+
+!Array publicMethods!
+
+literalString
+	| wst |
+	wst := String new writeStream.
+	wst nextPutAll: '#('.
+	self do: [:elem | wst nextPutAll: elem asSource] separatedBy: [wst space].
+	wst nextPut: $).
+	^wst contents!
+
+printvalueWith: printer
+	self isLiteral ifTrue: [
+		^LiteralPrintvalue string: self literalString].
+	^ArrayPrintvalue arguments: (self collect: [:item | item printvalueWith: printer])!
+
+ !
+
+Array addSelectors: #(#literalString #printvalueWith:) toCategories: #('printing')!
+
+!ByteArray publicMethods!
+
+isLiteral
+	^true!
+
+literalString
+	| wst |
+	wst := String new writeStream.
+	wst nextPutAll: '#['.
+	self do: [:int | wst nextPutAll: int printString] separatedBy: [wst space].
+	wst nextPut: $].
+	^wst contents!
+
+printvalueWith: printer
+	^LiteralPrintvalue string: self literalString!
+
+ !
+
+ByteArray addSelectors: #(#isLiteral #literalString #printvalueWith:) toCategories: #('printing')!
+
+!KeyedCollection publicMethods!
+
+keysForPrinting
+	^[self keys asSortedCollection] on: Error do: [:ex | ex return: self keys]!
+
+printargumentsWith: aPrinter
+	^self keysForPrinting collect: [:key |
+		DictionaryPrintargument
+			name: (key printvalueWith: aPrinter)
+			value: ((self at: key) printvalueWith: aPrinter)]!
+
+ !
+
+KeyedCollection addSelectors: #(#keysForPrinting #printargumentsWith:) toCategories: #('printing')!
+
 !EsString publicMethods!
 
 literalString
-	^self storeString!
+	^self printString!
 
  !
 
 EsString addSelectors: #(#literalString) toCategories: #('printing')!
+
+!EsString publicMethods!
+
+asText
+	^self!
+
+allBold
+	^self!
+
+ !
+
+EsString addSelectors: #(#asText #allBold) toCategories: #('converting')!
 
 !Symbol publicMethods!
 
@@ -1482,38 +1575,6 @@ literalString
 
 Symbol addSelectors: #(#literalString) toCategories: #('printing')!
 
-!Array publicMethods!
-
-literalString
-	| wst |
-	wst := String new writeStream.
-	wst nextPutAll: '#('.
-	self do: [:elem | wst nextPutAll: elem asSource] separatedBy: [wst space].
-	wst nextPut: $).
-	^wst contents!
-
- !
-
-Array addSelectors: #(#literalString) toCategories: #('printing')!
-
-!KeyedCollection publicMethods!
-
-keysForPrinting
-	^[self keys asSortedCollection] on: Error do: [:ex | ex return: self keys]!
-
-printargumentsWith: printer
-	| args |
-	args := OrderedCollection new.
-	self keysForPrinting do: [:key |
-		args add: (DictionaryPrintargument
-			name: (key printvalueWith: printer)
-			value: ((self at: key) printvalueWith: printer))].
-	^args!
-
- !
-
-KeyedCollection addSelectors: #(#keysForPrinting #printargumentsWith:) toCategories: #('printing')!
-
 !Color publicMethods!
 
 asColorValue
@@ -1522,6 +1583,29 @@ asColorValue
  !
 
 Color addSelectors: #(#asColorValue) toCategories: #('converting')!
+
+!WriteStream publicMethods!
+
+crtab
+	self
+		cr;
+		tab!
+
+nextPutAllText: aText
+	^self nextPutAll: aText asString!
+
+ !
+
+WriteStream addSelectors: #(#crtab #nextPutAllText:) toCategories: #('printing')!
+
+!Number publicMethods!
+
+nanoseconds
+	^Duration fromNanoseconds: self!
+
+ !
+
+Number addSelectors: #(#nanoseconds) toCategories: #('durations')!
 
 !Character publicMethods!
 
@@ -1587,25 +1671,14 @@ Date addSelectors: #(#printvalueWith:) toCategories: #('printing')
 
 !Dictionary publicMethods!
 
-isEqualValue: anObject
-	^self contentsEquals: anObject! !
-
-Dictionary addSelectors: #(#isEqualValue:) toCategories: #('dictionary testing')
-!
-
-!Dictionary publicMethods!
-
 keysForPrinting
 	^[self keys asSortedCollection] on: Error do: [:ex | ex return: self keys]!
 
-printargumentsWith: printer
-	| args |
-	args := OrderedCollection new.
-	self keysForPrinting do: [:key |
-		args add: (DictionaryPrintargument
-			name: (key printvalueWith: printer)
-			value: ((self at: key) printvalueWith: printer))].
-	^args!
+printargumentsWith: aPrinter
+	^self keysForPrinting collect: [:key |
+		DictionaryPrintargument
+			name: (key printvalueWith: aPrinter)
+			value: ((self at: key) printvalueWith: aPrinter)]!
 
 printvalueWith: printer
 	^DictionaryPrintvalue arguments: (self printargumentsWith: printer)! !
@@ -1616,9 +1689,18 @@ Dictionary addSelectors: #(#keysForPrinting #printargumentsWith: #printvalueWith
 !Duration class publicMethods!
 
 nanoseconds: aNumber
-	^aNumber nanoseconds! !
+	| microseconds seconds |
+	microseconds := aNumber / 1000.
+	seconds := microseconds / 1000000.
+	^self totalSeconds: seconds microseconds: microseconds - (seconds * 1000000)!
 
-Duration class addSelectors: #(#nanoseconds:) toCategories: #('instance creation')
+nanoseconds: aNumber
+	| microseconds seconds |
+	microseconds := aNumber / 1000.
+	seconds := microseconds / 1000000.
+	^self totalSeconds: seconds microseconds: microseconds - (seconds * 1000000)! !
+
+Duration class addSelectors: #(#nanoseconds: #nanoseconds:) toCategories: #('instance creation')
 !
 
 !Duration publicMethods!
@@ -1635,6 +1717,14 @@ printvalueWith: printer
 	^LiteralPrintvalue string: wst contents! !
 
 Duration addSelectors: #(#printvalueWith:) toCategories: #('printing')
+!
+
+!Duration publicMethods!
+
+asNanoseconds
+	^self asMicroseconds * 1000! !
+
+Duration addSelectors: #(#asNanoseconds) toCategories: #('converting')
 !
 
 !Object class publicMethods!
@@ -1707,15 +1797,9 @@ asSourceFor: targetClass
 	^printvalue sourceWithPrinter: printer!
 
 printvalueWith: printer
-	^LiteralPrintvalue string: self storeString!
+	^LiteralPrintvalue string: self storeString! !
 
-literalString
-	"<String | nil>
-	answers a string iff the receiver can be printed so that the compiler reconstructs the receiver from it"
-
-	^nil! !
-
-Object addSelectors: #(#asDescription #asDescriptionFor: #asSource #asSourceFor: #printvalueWith: #literalString) toCategories: #('printing')
+Object addSelectors: #(#asDescription #asDescriptionFor: #asSource #asSourceFor: #printvalueWith:) toCategories: #('printing')
 !
 
 !Object publicMethods!
@@ -1761,12 +1845,12 @@ Rectangle addSelectors: #(#printvalueWith:) toCategories: #('printing')
 
 printvalueWith: printer
 	self isLiteral ifTrue: [
-		^LiteralPrintvalue string: self literalString].
+		^LiteralPrintvalue string: self printString].
 	^ArrayPrintvalue arguments: (self collect: [:item | item printvalueWith: printer])!
 
 printvalueWith: printer
 	self isLiteral ifTrue: [
-		^LiteralPrintvalue string: self literalString].
+		^LiteralPrintvalue string: self printString].
 	^ArrayPrintvalue arguments: (self collect: [:item | item printvalueWith: printer])! !
 
 SequenceableCollection addSelectors: #(#printvalueWith: #printvalueWith:) toCategories: #('printing')
@@ -1829,9 +1913,9 @@ Time addSelectors: #(#printvalueWith:) toCategories: #('printing')
 !
 
 ValuesApp classes do: [:class |
-	EtTools managerInterface versionClass: class in: ValuesApp withName: '3.0.0.3']!
+	EtTools managerInterface versionClass: class in: ValuesApp withName: '3.0.1.0']!
 ValuesApp releaseEachClassIn: ValuesApp classes!
-EtTools managerInterface versionApplication: ValuesApp withName: '3.0.0.3'!
+EtTools managerInterface versionApplication: ValuesApp withName: '3.0.1.0'!
 EtTools managerInterface flushCache!
 
 ValuesApp initializeAfterLoad!

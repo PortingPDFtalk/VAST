@@ -1,6 +1,6 @@
-'From VisualWorks®, 8.3 of 28. Juli 2017 on 16. März 2022 at 09:53:54'!
+'From VisualWorks®, 8.3 of 28. Juli 2017 on 3. April 2022 at 10:46:50'!
 
-"Created 16. März 2022 um 09:53:54 by VA Smalltalk Transform(1.4.0.8,chaider)"
+"Created 3. April 2022 um 10:46:50 by VA Smalltalk Transform(1.4.0.10,chaider)"
 
 
 Application create: #ValuesTestingApp with:
@@ -16,18 +16,10 @@ Application subclass: #ValuesTestingApp
 	classVariableNames: ''
 	poolDictionaries: ''!
 
-!ValuesTestingApp class privateMethods !
-abtIsViewApplication
-	^false!
-initializeAfterLoad
-	(Smalltalk at: #Value) resetNamedValuesRegistry! !
 !ValuesTestingApp publicMethods!
 
 developmentPrerequisites
 	^#(#(#any 'SUnitToo' ''))!
-
-notice
-	^''!
 
 packageName
 	^'Values Testing'!
@@ -39,7 +31,7 @@ prerequisiteParcels
 	^#(#('SUnitToo' ''))!
 
 storeVersion
-	^'3.0.0.2'!
+	^'3.0.1.0'!
 
  !TestCase
 	subclass: #ValuemapTests
@@ -287,18 +279,6 @@ testComparing
 	self deny: (Valuemap with: #foo -> 'bar' with: $a -> 123) = (Valuemap with: #foo -> 'bars' with: $a -> 123).
 	self deny: (Valuemap with: #foo -> 'bar' with: $a -> 123) = (Valuemap with: #foo -> 'bar' with: $a -> 123 with: '' -> 0).!
 
-testDescribe
-	self assert: Valuemap example asSource = '((Valuemap new: 8)
-	add: #isinTitle -> ''ISIN'';
-	add: #isinValue -> ''DE0009999991'';
-	add: #boersenwertTitle -> ''Börsenwert'';
-	add: #boersenwertValue -> ''99,9 Mrd. €'';
-	add: #hochTiefTitle -> ''Hoch/Tief'';
-	add: #hochTiefValue -> ''10,00/20,00'';
-	add: #kgvTitle -> ''KGV'';
-	add: #kgvValue -> ''9,87'';
-	yourself)'!
-
 testDescribeAndReadBackNew
 	| inst |
 	inst := Valuemap new.
@@ -318,6 +298,30 @@ testEnumeration
 	keys := OrderedCollection new.
 	od keysDo: [:k | keys add: k].
 	self assert: keys asArray = #(#foo #baz).!
+
+testExampleSource
+	self assert: Valuemap example asSource = '((Valuemap new: 17)
+	add: #title -> ''Valuemap class example with examples of all basic values'';
+	add: #boolean -> true;
+	add: #character -> $A;
+	add: #symbol -> #mySymbol;
+	add: #string -> ''with umlauts and euro: äöüß€'';
+	add: #schluessel -> nil;
+	add: #integer -> 42;
+	add: #number -> 3.14;
+	add: #date -> (Date d: 27 m: 3 y: 2022);
+	add: #time -> (Time h: 12 m: 18);
+	add: #timestamp -> (Timestamp d: 27 m: 3 y: 2022 h: 12 m: 18);
+	add: #duration -> (Duration nanoseconds: 300000000000);
+	add: #color -> (ColorValue fromBytesRed: 127 green: 0 blue: 0);
+	add: #knownColor -> ColorValue red;
+	add: #array -> #(#one ''two'' 3);
+	add: #bytearray -> #[1 2 3];
+	add: #valuemap -> (Valuemap
+		with: #test -> true
+		with: #two -> 2
+		with: #none -> nil);
+	yourself)'!
 
 testIndexedAccess
 	| od |
@@ -386,7 +390,7 @@ testRemoving
 	self assert: od size = 1.
 	self assert: od keys asArray = #(#baz)! !
 
-ValuemapTests addSelectors: #(#testAdding #testAddingWithGrowth #testComparing #testDescribe #testDescribeAndReadBackNew #testEnumeration #testIndexedAccess #testIndexOf #testKeyedAccess #testReadBackAllTestInstances #testRemoving) toCategories: #('Testing')
+ValuemapTests addSelectors: #(#testAdding #testAddingWithGrowth #testComparing #testDescribeAndReadBackNew #testEnumeration #testExampleSource #testIndexedAccess #testIndexOf #testKeyedAccess #testReadBackAllTestInstances #testRemoving) toCategories: #('Testing')
 !
 
 !ValuePrinterTests publicMethods!
@@ -433,7 +437,12 @@ testArraySource
 		with: 1 -> #symbol
 		with: #key -> ''string''))'.!
 
+testBoolean
+	self assert: true asSource = 'true'.
+	self assert: false asSource = 'false'.!
+
 testColorValue
+	self assert: ColorValue new isEmpty.
 	self assert: ColorValue red asSource = 'ColorValue red'.
 	self assert: (ColorValue fromBytesRed: 255 green: 0 blue: 0) asSource = 'ColorValue red'.
 	self assert: (ColorValue fromBytesRed: 255 green: 0 blue: 10) asSource = '(ColorValue fromBytesRed: 255 green: 0 blue: 10)'!
@@ -487,6 +496,9 @@ testDictionaryWithValues
 		dictionary: (Valuemap
 			with: 1 -> #symbol
 			with: #key -> ''string'')) -> $x)'!
+
+testDuration
+	self assert: 5 minutes asSource = '(Duration nanoseconds: 300000000000)'!
 
 testLiteralArrays
 	self assert: #(1 2 10 20 100) asSource = '#(1 2 10 20 100)'!
@@ -567,33 +579,56 @@ testTimestamp
 	self assert: (Timestamp d: 15 m: 7 y: 2007 h: 0) asSource = '(Timestamp d: 15 m: 7 y: 2007)'.
 	self assert: (Timestamp d: 15 m: 7 y: 2007) asSource = '(Timestamp d: 15 m: 7 y: 2007)'! !
 
-ValuePrinterTests addSelectors: #(#testArray #testArraySource #testColorValue #testDate #testDictionary #testDictionarySource #testDictionaryWithValues #testLiteralArrays #testLongDictionary #testNumbers #testOptionalConstantSource #testPoint #testTime #testTimestamp) toCategories: #('Testing')
+ValuePrinterTests addSelectors: #(#testArray #testArraySource #testBoolean #testColorValue #testDate #testDictionary #testDictionarySource #testDictionaryWithValues #testDuration #testLiteralArrays #testLongDictionary #testNumbers #testOptionalConstantSource #testPoint #testTime #testTimestamp) toCategories: #('Testing')
 !
+
+!ValuesTestingApp class publicMethods!
+
+abtIsViewApplication
+	^false!
+
+ !
+
+ValuesTestingApp class addSelectors: #(#abtIsViewApplication) toCategories: #('testing')!
 
 !Valuemap class publicMethods!
 
 example
 	"self example"
 
-	| state |
-	state := Valuemap new.
-	state at: #isinTitle put: 'ISIN'.
-	state at: #isinValue put: 'DE0009999991'.
-	state at: #boersenwertTitle put: 'Börsenwert'.
-	state at: #boersenwertValue put: '99,9 Mrd. €'.
-	state at: #hochTiefTitle put: 'Hoch/Tief'.
-	state at: #hochTiefValue put: '10,00/20,00'.
-	state at: #kgvTitle put: 'KGV'.
-	state at: #kgvValue put: '9,87'.
-	^state! !
+	| map |
+	map := Valuemap new.
+	map at: #title put: self class name , ' example with examples of all basic values'.
+	map at: #boolean put: true.
+	map at: #character put: $A.
+	map at: #symbol put: #mySymbol.
+	map at: #string put: 'with umlauts and euro: äöüß€'.
+	map at: #schluessel put: nil.
+	map at: #integer put: 42.
+	map at: #number put: 3.14.
+	map at: #date put: (Date d: 27 m: 3 y: 2022).
+	map at: #time put: (Time h: 12 m: 18).
+	map at: #timestamp put: (Timestamp d: 27 m: 3 y: 2022 h: 12 m: 18).
+	map at: #duration put: 5 minutes.
+	map at: #color put: (ColorValue fromBytesRed: 127 green: 0 blue: 0).
+	map at: #knownColor put: ColorValue red.
+	map at: #array put: #(#one 'two' 3).
+	map at: #bytearray put: #[1 2 3].
+	map
+		at: #valuemap
+		put: (Valuemap
+			with: #test -> true
+			with: #two -> 2
+			with: #none -> nil).
+	^map! !
 
 Valuemap class addSelectors: #(#example) toCategories: #('test instances')
 !
 
 ValuesTestingApp classes do: [:class |
-	EtTools managerInterface versionClass: class in: ValuesTestingApp withName: '3.0.0.2']!
+	EtTools managerInterface versionClass: class in: ValuesTestingApp withName: '3.0.1.0']!
 ValuesTestingApp releaseEachClassIn: ValuesTestingApp classes!
-EtTools managerInterface versionApplication: ValuesTestingApp withName: '3.0.0.2'!
+EtTools managerInterface versionApplication: ValuesTestingApp withName: '3.0.1.0'!
 EtTools managerInterface flushCache!
 
 ValuesTestingApp initializeAfterLoad!
