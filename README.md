@@ -1,4 +1,4 @@
-# VASTPDFtalk
+# PDFtalk for VA Smalltalk
 FileOut of the **PDFtalk** project for **VA Smalltalk** (see [VA Smalltalk porting page](https://wiki.pdftalk.de/doku.php?id=vastport) for details).
 
 The Smalltalk files (.vast11.st and .vast10.st) are to be filed-in into a [VA Smalltalk 11.0 resp. 10.0.2](https://www.instantiations.com/vast-platform/) image.
